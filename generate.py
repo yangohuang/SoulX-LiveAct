@@ -24,7 +24,7 @@ from transformers import Wav2Vec2FeatureExtractor
 from src.audio_analysis.wav2vec2 import Wav2Vec2Model
 from diffusers.utils import export_to_video
 
-from fp8_gemm import FP8GemmOptions, enable_fp8_gemm
+from fp8_gemm import FP8GemmOptions, FP8Linear, enable_fp8_gemm
 from fp4_gemm import FP4GemmOptions, enable_fp4_gemm
 
 
@@ -228,6 +228,23 @@ def generate(args):
     for n in range(40):
         wan_i2v_model.blocks[n].self_attn.init_kvidx(frame_len, world_size)
 
+    if args.fp8_gemm:
+        enable_fp8_gemm(wan_i2v_model, options=FP8GemmOptions())
+        if args.block_offload:
+            # On the consumer/offload path, quantize to FP8 immediately after the
+            # DiT loads, block by block on GPU, discarding each bf16 copy as we go.
+            # Host steady-state drops from ~36 GB to ~18 GB before the VAE/CLIP/
+            # wav2vec loads, and the per-step host-to-device copy volume of the
+            # offload double-buffer is halved. Without --block_offload the wrap
+            # stays lazy, exactly as before.
+            _quant_dev = torch.device(f"cuda:{device}")
+            for _blk in wan_i2v_model.blocks:
+                for _m in _blk.modules():
+                    if isinstance(_m, FP8Linear):
+                        _m.materialize_fp8_weight(_quant_dev)
+                _blk.to('cpu')
+            torch_gc()
+
     vae = LightVAE(vae_path=os.path.join(args.ckpt_dir, 'Wan2.1_VAE.pth'), dtype=torch.bfloat16, device=device,
                    use_lightvae=False, parallel=(world_size > 1))
 
@@ -247,8 +264,6 @@ def generate(args):
         for name, param in _model.named_parameters():
             param.requires_grad = False
 
-    if args.fp8_gemm:
-        enable_fp8_gemm(wan_i2v_model, options=FP8GemmOptions())
     if args.fp4_gemm:
         print("Enabling FP4 GEMM acceleration...")
         def filter_fn(name, module):
