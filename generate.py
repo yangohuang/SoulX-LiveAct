@@ -203,7 +203,27 @@ def generate(args):
                 } for layer_id in range(40)} for i in range(len(timesteps) - 1)
             }
 
-    wan_i2v_model = WanModel.from_pretrained(args.ckpt_dir, torch_dtype=torch.bfloat16, low_cpu_mem_usage=False)
+    # Pre-encode all prompts with T5, then release it BEFORE loading the DiT.
+    # umT5-xxl (~11 GB) and the 18B DiT (~36 GB bf16) co-resident on the host
+    # will trigger the OOM killer on 64 GB-RAM machines.
+    with open(args.input_json, 'r', encoding='utf-8') as f:
+        _pre_input_data = json.load(f)
+    text_encoder = T5EncoderModel(text_len=512, dtype=torch.bfloat16, device='cpu' if args.t5_cpu else device,
+                                  checkpoint_path=os.path.join(args.ckpt_dir, 'models_t5_umt5-xxl-enc-bf16.pth'),
+                                  tokenizer_path=os.path.join(args.ckpt_dir, 'google/umt5-xxl'))
+    precomputed_ctx = []
+    for _data in _pre_input_data:
+        _ctx = [text_encoder(texts=_data['prompt'], device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)]
+        _edit = {
+            k: text_encoder(texts=v, device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)
+            for k, v in _data.get('edit_prompt', {}).items()
+        }
+        precomputed_ctx.append((_ctx, _edit))
+    text_encoder.model = None
+    del text_encoder
+    torch_gc()
+
+    wan_i2v_model = WanModel.from_pretrained(args.ckpt_dir, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True)
     wan_i2v_model = wan_i2v_model.to(dtype=torch.bfloat16)
     for n in range(40):
         wan_i2v_model.blocks[n].self_attn.init_kvidx(frame_len, world_size)
@@ -215,10 +235,6 @@ def generate(args):
         checkpoint_path=os.path.join(args.ckpt_dir, 'models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth'),
         tokenizer_path=os.path.join(args.ckpt_dir, 'xlm-roberta-large'), dtype=torch.bfloat16, device=device)
     clip.model = clip.model.to(device, dtype=torch.bfloat16)
-
-    text_encoder = T5EncoderModel(text_len=512, dtype=torch.bfloat16, device='cpu' if args.t5_cpu else device,
-                                  checkpoint_path=os.path.join(args.ckpt_dir, 'models_t5_umt5-xxl-enc-bf16.pth'),
-                                  tokenizer_path=os.path.join(args.ckpt_dir, 'google/umt5-xxl'))
 
     audio_encoder = Wav2Vec2Model.from_pretrained(
         args.wav2vec_dir, local_files_only=True, torch_dtype=torch.bfloat16
@@ -267,19 +283,14 @@ def generate(args):
     with open(args.input_json, 'r', encoding='utf-8') as f:
         input_data = json.load(f)
 
-    for data in input_data:
+    for _item_idx, data in enumerate(input_data):
         image_path = data['cond_image']
         audio_path = data['cond_audio']
         out_path = os.path.basename(image_path).split('.')[0] + '_' + os.path.basename(audio_path).split('.')[0] + '.mp4'
         prompt = data['prompt']
         edit_prompts = data.get('edit_prompt', {})
 
-        context = [text_encoder(texts=prompt, device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)]
-        if edit_prompts:
-            edit_prompts = {
-                k: text_encoder(texts=v, device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)
-                for k, v in edit_prompts.items()
-            }
+        context, edit_prompts = precomputed_ctx[_item_idx]
 
         image = Image.open(image_path).convert("RGB")
         cond_image = transform(image).unsqueeze(1).unsqueeze(0).to(device, torch.bfloat16)  # 1 C 1 H W
