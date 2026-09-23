@@ -175,19 +175,35 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535)  \
 ```
 
 #### 4. Run on RTX 4090/RTX 5090 GPUs
-**Note:** FP8 KV cache may slightly affect generation quality.
+On a 24 GB RTX 4090 with 64 GB host RAM, use FP8 weights, FP8 CPU KV cache,
+and block offload together. FP8 quantization can affect image quality.
+`--disable_compile` avoids the first-run compile cost. Block weights remain in
+pageable CPU memory by default so all 40 DiT blocks are not pinned at once.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 python generate.py \
-    --size 416*720 \
+    --size '416*720' \
     --ckpt_dir MODEL_PATH \
     --wav2vec_dir chinese-wav2vec2-base \
     --fps 24 \
     --input_json examples/example.json \
+    --fp8_gemm \
     --fp8_kv_cache \
+    --offload_cache \
     --block_offload \
-    --t5_cpu
+    --t5_cpu \
+    --disable_compile
 ```
+
+Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 1.5-second audio excerpt
+produced a 38-frame, 24 fps H.264/AAC video. Generation took 23.4 seconds for the
+first block and 21.5 seconds for the second; the full cold start and generation
+took 456 seconds. Sampled GPU use peaked at 9.0 GiB and minimum host available
+memory was 14.1 GiB. The previous BF16 weight path took 629 seconds for one
+14-frame block. FP8 substantially improves single-card throughput, but this
+configuration is still far from real time. See the [4090 benchmark](docs/benchmarks/2026-09-23-liveact-4090.md)
+for the exact input and measurements. `--pin_block_memory` requires substantially
+more free host RAM.
 
 #### 5. Run with single GPU for Eval
 
@@ -219,7 +235,10 @@ python generate.py \
 | `--steam_audio`   | bool  | No       | false   | Whether inference with steaming audio.                                                        |
 | `--mean_memory`   | bool  | No       | false   | Whether to use the mean memory strategy during inference for further performance improvement. |
 | `--fp8_kv_cache`   | bool  | No       | false   | Whether to store kv cache in FP8 and dequantize to BF16 on use. FP8 KV cache may slightly affect generation quality.|
+| `--fp8_gemm`       | bool  | No       | false   | Quantize linear weights to FP8 and use FP8 GEMM; conversion increases cold-start time. |
 | `--block_offload`   | bool  | No       | false   | Whether to offload model blocks to CPU between block forwards.|
+| `--disable_compile` | bool  | No       | false   | Skip `torch.compile` to reduce cold-start time and memory. |
+| `--pin_block_memory` | bool | No       | false   | Pin all CPU-offloaded DiT weights for faster transfers. Requires substantially more host RAM. |
 
 
 ### 💻 GUI demo
@@ -244,6 +263,8 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535) \
 ```
 
 #### 2. Run on RTX 4090/RTX 5090 GPUs
+The 4090 measurements above apply to `generate.py`. The GUI `demo.py` path still
+places its KV cache on GPU and has not been verified on a 24 GB card.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 torchrun --nproc_per_node=1 --master_port=$(shuf -n 1 -i 10000-65535) \
