@@ -195,15 +195,15 @@ python generate.py \
     --disable_compile
 ```
 
-Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 1.5-second audio excerpt
-produced a 38-frame, 24 fps H.264/AAC video. Generation took 23.4 seconds for the
-first block and 21.5 seconds for the second; the full cold start and generation
-took 456 seconds. Sampled GPU use peaked at 9.0 GiB and minimum host available
-memory was 14.1 GiB. The previous BF16 weight path took 629 seconds for one
-14-frame block. FP8 substantially improves single-card throughput, but this
-configuration is still far from real time. See the [4090 benchmark](docs/benchmarks/2026-09-23-liveact-4090.md)
-for the exact input and measurements. `--pin_block_memory` requires substantially
-more free host RAM.
+Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 5-second audio excerpt
+produced a 117-frame, 24 fps H.264/AAC video. Four generation blocks took 24.9,
+21.5, 21.4 and 21.4 seconds, with a 465-second cold start through MP4 completion.
+The sampled minimum host `MemAvailable` was 13.3 GiB. On a separate identical
+0.5-second input, FP8 reduced one-block generation from 629 to 24.5 seconds
+versus BF16 weights. This configuration is still far from real time. See the
+[4090 benchmark](docs/benchmarks/2026-09-23-liveact-4090.md) for inputs,
+measurements and GPU memory. `--pin_block_memory` requires substantially more
+free host RAM.
 
 #### 5. Run with single GPU for Eval
 
