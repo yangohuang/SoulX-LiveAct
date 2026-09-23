@@ -205,6 +205,31 @@ versus BF16 weights. This configuration is still far from real time. See the
 measurements and GPU memory. `--pin_block_memory` requires substantially more
 free host RAM.
 
+For repeated use, add `--fp8_cache_dir /path/to/dit-fp8-cache`,
+`--build_fp8_cache`, and `--prompt_cache_dir /path/to/prompt-cache` to the
+command above once. The FP8 cache is written after quantization; the prompt cache stores T5
+embeddings for the exact prompts in `--input_json`. Later runs use the same
+cache paths without `--build_fp8_cache`, avoiding BF16 DiT loading, FP8
+conversion, and T5 encoding. The FP8 cache occupied 18 GB in our 4090 test;
+building it once peaked at about 54.4 GiB process RSS. Caches are invalidated
+when their source checkpoint files change size or modification time.
+
+`--serve_stdin` keeps the loaded models resident. It prints `LIVEACT_READY`
+and then accepts one JSON object per input line with `prompt`, `cond_image`,
+`cond_audio`, and optional `output_path`. All prompt and edit-prompt values
+must be listed in `--input_json` at startup; the 64 GB host-RAM setup does not
+keep T5 alongside the DiT for arbitrary new prompts. Malformed requests
+receive `LIVEACT_ERROR` while the worker stays resident. Completed requests
+print `LIVEACT_RESULT` with their output path and elapsed time. In a 1.5-second
+audio test, the first request took 55.4 seconds and an identical second request
+took 42.0 seconds in the same process. This improves response latency,
+not steady generated FPS.
+
+`--denoising_steps 2` is an optional quality/speed experiment; the default
+3-step schedule is unchanged. On a 5-second 4090 input, steady blocks fell
+from about 21.4 to 14.8 seconds, while frame-to-frame changes increased.
+Review the output's motion and lip sync before using two steps for production.
+
 #### 5. Run with single GPU for Eval
 
 ```bash
@@ -239,6 +264,11 @@ python generate.py \
 | `--block_offload`   | bool  | No       | false   | Whether to offload model blocks to CPU between block forwards.|
 | `--disable_compile` | bool  | No       | false   | Skip `torch.compile` to reduce cold-start time and memory. |
 | `--pin_block_memory` | bool | No       | false   | Pin all CPU-offloaded DiT weights for faster transfers. Requires substantially more host RAM. |
+| `--fp8_cache_dir` | str | No | - | Load an offline FP8 DiT cache; requires FP8 GEMM and block offload. |
+| `--build_fp8_cache` | bool | No | false | Build the FP8 cache once from BF16 weights. |
+| `--prompt_cache_dir` | str | No | - | Read or build T5 embeddings for the exact prompt catalog. |
+| `--serve_stdin` | bool | No | false | Keep models resident and accept JSON-line requests for pre-encoded prompts. |
+| `--denoising_steps` | int | No | 3 | Use the original 3-step schedule or experimental 2-step schedule. |
 
 
 ### 💻 GUI demo

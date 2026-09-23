@@ -89,8 +89,9 @@ class FP8Linear(nn.Module):
                          if linear.bias is not None else None)
             # Stash FP16 weights on CPU to immediately free GPU VRAM. We keep
             # them until FP8 weights are materialized, then optionally discard.
-            self._fp16_weight_cpu = linear.weight.detach().to(device="cpu", dtype=torch.bfloat16).contiguous()
-            if linear.bias is not None:
+            self._fp16_weight_cpu = (None if linear.weight.is_meta else
+                                     linear.weight.detach().to(device="cpu", dtype=torch.bfloat16).contiguous())
+            if linear.bias is not None and not linear.bias.is_meta:
                 self._fp16_bias_cpu = linear.bias.detach().to(device="cpu", dtype=torch.bfloat16).contiguous()
 
         # vLLM FP8 GEMM plumbing. We avoid reading vLLM global config, so we
@@ -353,5 +354,4 @@ def enable_fp8_gemm(
 
     _recurse("", model)
     return model
-
 
