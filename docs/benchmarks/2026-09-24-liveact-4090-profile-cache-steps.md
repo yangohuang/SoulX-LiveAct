@@ -77,8 +77,48 @@ and lip-sync review remains necessary before changing the default. The
 side-by-side local artifact has three steps on the left and two on the right.
 
 Even the faster setting is about 11 times slower than 24 fps real-time
-generation on this RTX 4090. The next measurable target is to reduce the
-default three-step steady block below 19 seconds while staying under 18 GB
-GPU process memory, first by testing one GPU-resident denoising-step KV cache
-against the current CPU-offloaded baseline. This is an experiment, not an
-achieved result.
+generation on this RTX 4090.
+
+## First-step KV residence: follow-up experiment
+
+With the default three denoising steps unchanged, `--resident_kv_steps 1`
+keeps only step 0's FP8 KV tensors on GPU. The other two step caches still use
+the original CPU offload. This adds about 6.4 GiB persistent GPU KV storage
+at `416*720` and requires FP8 KV, CPU cache offload, and audio CFG no greater
+than 1.0.
+
+| Run | Subsequent block median | First / last five subsequent blocks | Sampled GPU process peak |
+| --- | ---: | --- | ---: |
+| 5 s, CPU KV baseline | 21.341 s | 3 subsequent blocks | not sampled in this run |
+| 5 s, first-step GPU KV | 18.891 s | 3 subsequent blocks | 17.13 GiB (1 s sampling) |
+| 30 s, CPU KV baseline | 21.401 s | 21.495 / 21.417 s | 8.69 GiB |
+| 30 s, first-step GPU KV | 18.954 s | 18.934 / 19.448 s | 16.12 GiB (3 s sampling) |
+
+The 30-second resident run completed 23 blocks and produced 722 video frames,
+30.083-second video, and 30.000-second audio. Complete FFmpeg decoding passed;
+early, middle, and late frames showed no obvious identity collapse. Its
+sampled minimum host `MemAvailable` was 34.45 GiB. A separate resident
+profiling run measured the first DiT forward in the second block at 3.891 s,
+versus 6.319 s on the CPU-offloaded baseline. The 40-layer KV H2D and D2H
+profiler ranges disappeared; FP8 GEMM and block-weight copies remained about
+0.97 and 1.26 seconds, respectively. Profiling overhead makes the isolated
+forward times unsuitable as exact steady block predictions.
+
+The resident 5-second video differs slightly at the pixel level from the CPU
+KV output; sampled frames show no obvious degradation, but lip sync and
+perceptual equivalence are not established. The last five blocks of the first
+30-second resident run rose to a 19.448-second median, while a fresh 5-second
+request returned to 18.86–18.96 seconds. A second 30-second run recorded
+CUDA events for every DiT forward and profiled the first forward of block 20.
+Excluding that profiled block, the last four blocks were 18.962, 18.973,
+18.996, and 18.961 seconds. Early versus late CUDA-event medians were
+3.849/3.853 seconds for step 0, 6.499/6.520 for step 1, and 6.478/6.480
+for step 2. The late step-0 profiler measured 3.862 seconds and still showed
+no KV transfer ranges. The one-run late slowdown did not reproduce, so its
+cause remains unconfirmed. The overall median target below 19 seconds was
+met, but an every-block 19-second bound has not been demonstrated.
+
+A persistent process with resident KV completed two identical 1.5-second
+requests in 44.508 and 36.900 seconds; their 38 decoded frames matched
+pixel-for-pixel. An intervening prompt outside the pre-encoded catalog
+returned `LIVEACT_ERROR` without terminating the worker.

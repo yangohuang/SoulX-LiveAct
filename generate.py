@@ -151,6 +151,12 @@ def _parse_args():
         type=str,
         default=None,
         help="Read or build offline T5 embeddings for the exact prompt catalog in --input_json.")
+    parser.add_argument(
+        "--resident_kv_steps",
+        type=int,
+        choices=(0, 1),
+        default=0,
+        help="Experiment: keep the first denoising step's FP8 KV cache on GPU (about 6.4 GiB at 416x720).")
 
     add_low_memory_arguments(parser)
 
@@ -170,6 +176,8 @@ def generate(args):
         raise ValueError("--fp8_cache_dir requires --fp8_gemm and --block_offload")
     if args.build_fp8_cache and not args.fp8_cache_dir:
         raise ValueError("--build_fp8_cache requires --fp8_cache_dir")
+    if args.resident_kv_steps and not (args.offload_cache and args.fp8_kv_cache and args.audio_cfg <= 1.0):
+        raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -416,6 +424,8 @@ def generate(args):
                 mean_memory=args.mean_memory,
                 offload=args.offload_cache,
                 audio_cfg=args.audio_cfg,
+                resident_steps=args.resident_kv_steps,
+                onload_device=f"cuda:{device}",
             )
 
         iter_total_num = int(audio_len / (vae_stride[0] * blksz_lst[-1] / fps)) + 1

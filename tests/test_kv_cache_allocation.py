@@ -6,6 +6,41 @@ import runtime_options
 
 
 class KvCacheAllocationTests(unittest.TestCase):
+    @unittest.skipUnless(torch.cuda.is_available(), "requires CUDA")
+    def test_one_resident_step_avoids_offload_while_other_steps_stay_on_cpu(self):
+        caches, null_caches = runtime_options.allocate_kv_caches(
+            token_count=2,
+            step_count=3,
+            layer_count=1,
+            device="cpu",
+            fp8=True,
+            mean_memory=False,
+            offload=True,
+            audio_cfg=1.0,
+            resident_steps=1,
+            onload_device="cuda:0",
+        )
+        self.assertIsNone(null_caches)
+        self.assertEqual(caches[0][0]["k"].device.type, "cuda")
+        self.assertFalse(caches[0][0]["offload_cache"])
+        self.assertEqual(caches[1][0]["k"].device.type, "cpu")
+        self.assertTrue(caches[1][0]["offload_cache"])
+
+    def test_resident_step_requires_cpu_offload_and_fp8(self):
+        for offload, fp8 in ((False, True), (True, False)):
+            with self.subTest(offload=offload, fp8=fp8), self.assertRaises(ValueError):
+                runtime_options.allocate_kv_caches(
+                    token_count=2, step_count=3, layer_count=1, device="cpu",
+                    fp8=fp8, mean_memory=False, offload=offload,
+                    audio_cfg=1.0, resident_steps=1, onload_device="cuda:0")
+
+    def test_resident_step_rejects_non_cuda_target(self):
+        with self.assertRaisesRegex(ValueError, "CUDA"):
+            runtime_options.allocate_kv_caches(
+                token_count=2, step_count=3, layer_count=1, device="cpu",
+                fp8=True, mean_memory=False, offload=True, audio_cfg=1.0,
+                resident_steps=1, onload_device="cpu")
+
     def test_fp8_cpu_cache_without_audio_guidance(self):
         self.assertTrue(hasattr(runtime_options, "allocate_kv_caches"))
         caches, null_caches = runtime_options.allocate_kv_caches(

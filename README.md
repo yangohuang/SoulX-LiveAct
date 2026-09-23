@@ -230,6 +230,16 @@ not steady generated FPS.
 from about 21.4 to 14.8 seconds, while frame-to-frame changes increased.
 Review the output's motion and lip sync before using two steps for production.
 
+`--resident_kv_steps 1` is a separate experiment that keeps the first
+denoising step's FP8 KV cache on the GPU while the other steps remain
+CPU-offloaded. It requires `--fp8_kv_cache`, `--offload_cache`, and
+`--audio_cfg` no greater than 1.0. At `416*720`, it adds about 6.4 GiB of persistent GPU KV
+storage. In a 5-second test with the original three steps, the steady block
+median fell from 21.34 to 18.89 seconds; sampled process GPU memory peaked
+at 17.13 GiB. This option remains disabled by default.
+See the [4090 profile and cache comparison](docs/benchmarks/2026-09-24-liveact-4090-profile-cache-steps.md)
+for the profiler attribution, cold-start timings, and longer-run results.
+
 #### 5. Run with single GPU for Eval
 
 ```bash
@@ -269,6 +279,7 @@ python generate.py \
 | `--prompt_cache_dir` | str | No | - | Read or build T5 embeddings for the exact prompt catalog. |
 | `--serve_stdin` | bool | No | false | Keep models resident and accept JSON-line requests for pre-encoded prompts. |
 | `--denoising_steps` | int | No | 3 | Use the original 3-step schedule or experimental 2-step schedule. |
+| `--resident_kv_steps` | int | No | 0 | Keep the first denoising step's FP8 KV cache on GPU (experimental 4090 setting). |
 
 
 ### 💻 GUI demo
