@@ -9,6 +9,7 @@ from tqdm import tqdm
 import argparse
 import json
 import sys
+from contextlib import nullcontext
 from pathlib import Path
 
 import torch
@@ -34,7 +35,7 @@ from denoising_schedule import denoising_schedule
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
-from temporal_continuity import anchor_chunk_start
+from video_output import VideoBlockWriter
 
 
 torch.backends.cudnn.benchmark = True
@@ -159,10 +160,10 @@ def _parse_args():
         default=0,
         help="Experiment: keep the first denoising step's FP8 KV cache on GPU (about 6.4 GiB at 416x720).")
     parser.add_argument(
-        "--motion_anchor_strength",
-        type=float,
-        default=0.0,
-        help="Experiment: blend the next chunk's first two clean latents toward the prior chunk (0 disables it).")
+        "--stream_video_output",
+        action="store_true",
+        default=False,
+        help="Encode each decoded block immediately to bound host video-frame buffering.")
 
     add_low_memory_arguments(parser)
 
@@ -184,8 +185,6 @@ def generate(args):
         raise ValueError("--build_fp8_cache requires --fp8_cache_dir")
     if args.resident_kv_steps and not (args.offload_cache and args.fp8_kv_cache and args.audio_cfg <= 1.0):
         raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
-    if not 0.0 <= args.motion_anchor_strength <= 1.0:
-        raise ValueError("--motion_anchor_strength must be between 0 and 1")
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -438,92 +437,98 @@ def generate(args):
 
         iter_total_num = int(audio_len / (vae_stride[0] * blksz_lst[-1] / fps)) + 1
         print('----iter_total_num=', iter_total_num)
+        video_path = 'tmp.mp4'
+        writer_context = (VideoBlockWriter(video_path, fps=fps)
+                          if args.stream_video_output else nullcontext(None))
         gen_video_list = []
         torch.manual_seed(args.seed)
-        for _ in range(iter_total_num):
-            t1 = time.time()
-            audio_start_idx, audio_end_idx = 0, frame_num
-            if (_ - 1) * blksz_lst[-1] * vae_stride[0] > 0:
-                audio_start_idx += (_ - 1) * blksz_lst[-1] * vae_stride[0]
-                audio_end_idx += (_ - 1) * blksz_lst[-1] * vae_stride[0]
+        with writer_context as video_writer:
+            for _ in range(iter_total_num):
+                t1 = time.time()
+                audio_start_idx, audio_end_idx = 0, frame_num
+                if (_ - 1) * blksz_lst[-1] * vae_stride[0] > 0:
+                    audio_start_idx += (_ - 1) * blksz_lst[-1] * vae_stride[0]
+                    audio_end_idx += (_ - 1) * blksz_lst[-1] * vae_stride[0]
 
-            if not args.steam_audio:
-                audio_embs = get_audio_emb(audio_embedding, audio_start_idx, audio_end_idx, device)
-            else:
-                audio, sr = resample_audio(
-                    audio_ori[:1, int(sr_ori*(audio_start_idx/fps)):int(sr_ori*((audio_end_idx+2)/fps))], sr_ori, fps
-                )
-                audio_embedding = get_embedding(audio[0], wav2vec_feature_extractor, audio_encoder, device=device)
-                audio_embs = get_audio_emb(audio_embedding, 0, frame_num, device)
-
-            y_cut = y[:, :, :frame_num // 4 + 1, ...]
-
-            _context = context
-            if edit_prompts:
-                for k, v in edit_prompts.items():
-                    if ast.literal_eval(k)[0] <= _ <= ast.literal_eval(k)[1]:
-                        _context = [v]
-                        break
-
-            with torch.no_grad(), torch.autocast('cuda', dtype=torch.bfloat16):
-                f = _ if _ <= 1 else 1
-                latent = torch.randn(16, blksz_lst[f], height // vae_stride[1], width // vae_stride[2],
-                                     dtype=torch.bfloat16, device=device)
-                for i in tqdm(range(len(timesteps) - 1)):
-                    timestep = timesteps[i]
-                    arg_c = {'context': _context, 'clip_fea': clip_context, 'ref_target_masks': ref_target_masks,
-                             'audio': audio_embs, 'y': y_cut[:, :, sum(blksz_lst[:f]):sum(blksz_lst[:f + 1])],
-                             'start_idx': sum(blksz_lst[:f]) * frame_len, 'end_idx': sum(blksz_lst[:f + 1]) * frame_len,
-                             'update_cache': _ > 1}
-                    noise_pred = wan_i2v_model([latent.to(device)], t=timestep, kv_cache=kv_cache[i],
-                                               skip_audio=skip_audio_by_step[i], **arg_c)[0]
-
-                    if args.audio_cfg>1.0 and not skip_audio_by_step[i]:
-                        arg_null_audio = \
-                            {'context': _context, 'clip_fea': clip_context, 'ref_target_masks': ref_target_masks,
-                             'audio': torch.zeros_like(audio_embs), 'y': y_cut[:, :, sum(blksz_lst[:f]):sum(blksz_lst[:f + 1])],
-                             'start_idx': sum(blksz_lst[:f]) * frame_len, 'end_idx': sum(blksz_lst[:f + 1]) * frame_len,
-                             'update_cache': _ > 1}
-                        noise_pred_drop_audio = wan_i2v_model([latent.to(device)], t=timestep, kv_cache=kv_cache_null_audio[i],
-                                                              **arg_null_audio)[0]
-                        noise_pred = noise_pred_drop_audio + args.audio_cfg * (noise_pred - noise_pred_drop_audio)
-
-                    dt = timesteps[i] - timesteps[i + 1]
-                    dt = dt / 1000
-                    # latent = latent + (-noise_pred) * dt[0]
-                    x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
-                    if f > 0 and args.motion_anchor_strength > 0:
-                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength)
-                    latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
-
-                if f == 0:
-                    _latent = latent
-                    _videos = vae.decode(_latent.squeeze(0))
+                if not args.steam_audio:
+                    audio_embs = get_audio_emb(audio_embedding, audio_start_idx, audio_end_idx, device)
                 else:
-                    _latent = torch.concat([pre_latent[:, -3:], latent], dim=1)
-                    _videos = vae.decode(_latent.squeeze(0))[:, :, 9:]
-                pre_latent = latent
-                gen_video_list.append(_videos.cpu())
+                    audio, sr = resample_audio(
+                        audio_ori[:1, int(sr_ori*(audio_start_idx/fps)):int(sr_ori*((audio_end_idx+2)/fps))], sr_ori, fps
+                    )
+                    audio_embedding = get_embedding(audio[0], wav2vec_feature_extractor, audio_encoder, device=device)
+                    audio_embs = get_audio_emb(audio_embedding, 0, frame_num, device)
 
-                if args.dura_print:
-                    torch.cuda.synchronize()
-                    if rank == 0:
-                        t2 = time.time()
-                        dura = blksz_lst[f] * vae_stride[0] / fps * 1000
-                        print(f"Done Block {_}: duration {dura}ms video cost {(t2 - t1) * 1000:.2f} ms")
+                y_cut = y[:, :, :frame_num // 4 + 1, ...]
+
+                _context = context
+                if edit_prompts:
+                    for k, v in edit_prompts.items():
+                        if ast.literal_eval(k)[0] <= _ <= ast.literal_eval(k)[1]:
+                            _context = [v]
+                            break
+
+                with torch.no_grad(), torch.autocast('cuda', dtype=torch.bfloat16):
+                    f = _ if _ <= 1 else 1
+                    latent = torch.randn(16, blksz_lst[f], height // vae_stride[1], width // vae_stride[2],
+                                         dtype=torch.bfloat16, device=device)
+                    for i in tqdm(range(len(timesteps) - 1)):
+                        timestep = timesteps[i]
+                        arg_c = {'context': _context, 'clip_fea': clip_context, 'ref_target_masks': ref_target_masks,
+                                 'audio': audio_embs, 'y': y_cut[:, :, sum(blksz_lst[:f]):sum(blksz_lst[:f + 1])],
+                                 'start_idx': sum(blksz_lst[:f]) * frame_len, 'end_idx': sum(blksz_lst[:f + 1]) * frame_len,
+                                 'update_cache': _ > 1}
+                        noise_pred = wan_i2v_model([latent.to(device)], t=timestep, kv_cache=kv_cache[i],
+                                                   skip_audio=skip_audio_by_step[i], **arg_c)[0]
+
+                        if args.audio_cfg>1.0 and not skip_audio_by_step[i]:
+                            arg_null_audio = \
+                                {'context': _context, 'clip_fea': clip_context, 'ref_target_masks': ref_target_masks,
+                                 'audio': torch.zeros_like(audio_embs), 'y': y_cut[:, :, sum(blksz_lst[:f]):sum(blksz_lst[:f + 1])],
+                                 'start_idx': sum(blksz_lst[:f]) * frame_len, 'end_idx': sum(blksz_lst[:f + 1]) * frame_len,
+                                 'update_cache': _ > 1}
+                            noise_pred_drop_audio = wan_i2v_model([latent.to(device)], t=timestep, kv_cache=kv_cache_null_audio[i],
+                                                                  **arg_null_audio)[0]
+                            noise_pred = noise_pred_drop_audio + args.audio_cfg * (noise_pred - noise_pred_drop_audio)
+
+                        dt = timesteps[i] - timesteps[i + 1]
+                        dt = dt / 1000
+                        # latent = latent + (-noise_pred) * dt[0]
+                        x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
+                        latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
+
+                    if f == 0:
+                        _latent = latent
+                        _videos = vae.decode(_latent.squeeze(0))
+                    else:
+                        _latent = torch.concat([pre_latent[:, -3:], latent], dim=1)
+                        _videos = vae.decode(_latent.squeeze(0))[:, :, 9:]
+                    pre_latent = latent
+                    if video_writer is None:
+                        gen_video_list.append(_videos.cpu())
+                    else:
+                        video_writer.append(_videos)
+
+                    if args.dura_print:
+                        torch.cuda.synchronize()
+                        if rank == 0:
+                            t2 = time.time()
+                            dura = blksz_lst[f] * vae_stride[0] / fps * 1000
+                            print(f"Done Block {_}: duration {dura}ms video cost {(t2 - t1) * 1000:.2f} ms")
         torch.cuda.synchronize()
         # torch_gc()
 
-        videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
-        video_path = 'tmp.mp4'
-        export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
+        if video_writer is None:
+            videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
+            export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
+            del videos
         add_audio_to_video(video_path, audio_path, out_path)
         if args.serve_stdin:
             print('LIVEACT_RESULT ' + json.dumps({
                 'output_path': out_path,
                 'elapsed_s': round(time.perf_counter() - request_started, 3),
             }, ensure_ascii=False), flush=True)
-        del videos, gen_video_list
+        del gen_video_list
         gc.collect()
 
         torch.cuda.synchronize()

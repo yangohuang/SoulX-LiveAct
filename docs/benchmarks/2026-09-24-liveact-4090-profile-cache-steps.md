@@ -122,3 +122,72 @@ A persistent process with resident KV completed two identical 1.5-second
 requests in 44.508 and 36.900 seconds; their 38 decoded frames matched
 pixel-for-pixel. An intervening prompt outside the pre-encoded catalog
 returned `LIVEACT_ERROR` without terminating the worker.
+
+## Pinned block weights: speed versus memory
+
+One further 5-second A/B kept the same cached 3-step, resident-step-0 KV
+configuration and changed only `--pin_block_memory`. The runs were sequential,
+so minor OS and GPU variance remains possible. Raw logs and 2-second samples
+are `/tmp/liveact-pin-ab-{baseline,pinned}.log` and corresponding
+`-samples.csv` files.
+
+| Setting | Steady block times | Median | Ready time | Minimum host `MemAvailable` | Sampled whole-GPU peak |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Default pageable block weights | 19.099, 18.990, 18.966 s | 18.990 s | 6.982 s | 37,199 MiB | 15,866 MiB |
+| Pinned block weights | 16.858, 17.338, 16.585 s | 16.858 s | 19.761 s | 9,128 MiB | 21,195 MiB |
+
+The pinned setting cut the three-block median by about 11%, but consumed about
+27 GiB more host headroom, increased startup by about 13 seconds, and left
+little margin for a longer output or another process. Both 117-frame videos
+decoded fully. Their pixels differed, as did separate unpinned process runs;
+the pinned run's 2.5-second frame had no obvious corruption on inspection.
+That is insufficient to establish perceptual or lip-sync equivalence. Keep
+pinning opt-in on this 64 GiB machine rather than combining it with long-video
+generation by default.
+
+## Stream decoded blocks to the encoder
+
+The optional `--stream_video_output` writes each decoded block to imageio's
+FFmpeg writer and discards the decoded tensor instead of retaining every block
+for a final `torch.concat` and float NumPy conversion. A synthetic two-block
+test compares the fully decoded frames with the existing Diffusers exporter
+byte-for-byte. The writer is closed through a context manager even if block
+generation raises.
+
+A cached 5-second A/B with resident step-0 KV and the default three denoising
+steps gave subsequent block medians of 18.977 seconds (whole-video export) and
+19.017 seconds (streamed); both produced 117 frames, 4.875-second video and
+audio, and passed full FFmpeg decoding. The runs were separate CUDA processes,
+so their generated pixels are not identical; the identical synthetic test is
+the direct encoder-parity check. A brief concurrent GPU task affected the
+streamed run's early whole-machine RAM/GPU samples, so its sampled minimum
+`MemAvailable` cannot be treated as a memory comparison. Raw files are
+`/tmp/liveact-stream-ab-{baseline,streamed}.{log,mp4}` and the corresponding
+`-samples.csv` files.
+
+The streamed 30-second run completed 23 blocks in 461.4 seconds wall time.
+Its subsequent block median was 19.025 seconds; the 722-frame, 30.084-second
+H.264/AAC output decoded fully. Frames at 1, 15, and 29 seconds showed no
+obvious identity or scene collapse. A same-version 30-second original-export
+run then used the same fixture, caches, model settings, and 3-second process
+sampler. Both videos have 722 frames at 24 fps and 30.000-second audio; both
+fully decode. The MP4 container durations differ by 0.083 seconds because of
+the last video packet timestamp, while both video track durations are exactly
+30.083 seconds.
+
+| 30-second run | Later-block median | Process `VmRSS` at ~61 s | At ~449 s | Sampled peak `VmRSS` | Sampled peak `RssAnon` |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Original whole-video export | 18.939 s | 36,154 MiB | 38,010 MiB | 40,607 MiB | 22,242 MiB |
+| Stream each decoded block | 19.025 s | 36,265 MiB | 36,825 MiB | 36,831 MiB | 18,466 MiB |
+
+The sampled peak process RSS fell by 3,776 MiB (3.69 GiB). From early to late
+generation, the original path grew about 1,856 MiB, versus 560 MiB with
+streaming; the extra original-path growth is consistent with retaining BF16
+decoded frames. Its final concatenation/conversion caused the larger peak.
+These are single sequential runs with 3-second samples, so brief peaks may be
+missed and a repeat would refine the variance. The later-block medians differ
+by 0.086 seconds, too little to claim a generation-speed change. Both runs had
+zero sampled swap; the streamed run's `RssShmem` peaked at 18 MiB. Whole-machine
+`MemAvailable` was perturbed by another workload during the streamed run, so
+the table uses per-process RSS. Raw data are `/tmp/liveact-{baseline,stream}-30s.log`
+and matching `-samples.csv` files.
