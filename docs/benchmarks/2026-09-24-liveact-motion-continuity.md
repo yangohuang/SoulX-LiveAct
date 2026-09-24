@@ -59,6 +59,25 @@ short clip; the sample is too short to establish lip-sync equivalence. The
 second side-by-side artifact is
 `/home/yg/yg/code/docs/liveact-4090-local/liveact-motion-second-baseline-left-anchor025-right-5s.mp4`.
 
+An additional 5-second probe applied strength 0.45 **only at the final
+denoising step** instead of at all three steps. Its first-eight-frame proxy
+was 2.550, slightly below the all-step 0.25 result of 2.643, but SyncNet
+minimum distance/confidence were 7.854/5.793 versus 7.576/6.166 for
+all-step 0.25 and 7.695/6.037 for the original. It did not improve the
+motion-versus-mouth tradeoff, so the final-step-only change was discarded
+and is not part of the implementation.
+
+A second throwaway probe used strength 0.45 but reduced its spatial weight
+with a Gaussian mask around a **manually chosen mouth center**. For the first
+and second 5-second fixtures, first-eight-frame proxies were 2.451 and
+2.792, below the all-step 0.25 results of 2.643 and 3.103. SyncNet
+minimum distance/confidence were 7.553/6.229 on the first fixture and
+7.913/6.468 on the second. The second fixture's fixed mouth crop changed
+*less* than with the 0.25 anchor despite the protective mask, and its
+SyncNet distance/confidence moved in opposite directions relative to 0.25.
+The hand-picked mask requires per-subject tuning and did not establish
+reusable lip preservation. It remains outside the implementation.
+
 | Video | First 8-frame mean | Later 24-frame mean | Seam mean | Worst seam |
 | --- | ---: | ---: | ---: | ---: |
 | 30 s original | 2.584 | 1.952 | 3.039 | 7.431 |
@@ -106,3 +125,5 @@ The local review videos are
 and `/home/yg/yg/code/docs/liveact-4090-local/liveact-motion-baseline-left-anchor025-right-30s.mp4`.
 The latter has the original on the left and 0.25 on the right; the
 `liveact-motion-baseline-left-anchor-right-30s.mp4` file compares 0.45.
+The shorter `liveact-motion-worst-seam-15s.gif` in the same local directory
+shows the remaining abrupt movement near frame 373.
