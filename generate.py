@@ -35,6 +35,7 @@ from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
 from temporal_continuity import anchor_chunk_start
+from boundary_probe import block_start_frame, capture_latent_pair, capture_final_context
 
 
 torch.backends.cudnn.benchmark = True
@@ -163,6 +164,22 @@ def _parse_args():
         type=float,
         default=0.0,
         help="Experiment: blend the next chunk's first two clean latents toward the prior chunk (0 disables it).")
+    parser.add_argument(
+        "--motion_anchor_lowpass_kernel",
+        type=int,
+        choices=(0, 3, 5, 9),
+        default=0,
+        help="Experiment: filter the anchor correction spatially to preserve fine latent detail (0 uses the original full anchor).")
+    parser.add_argument(
+        "--boundary_probe_block",
+        type=int,
+        default=None,
+        help="Save clean-latent boundary snapshots for this zero-based generated block.")
+    parser.add_argument(
+        "--boundary_probe_dir",
+        type=str,
+        default=None,
+        help="Directory for --boundary_probe_block snapshots.")
 
     add_low_memory_arguments(parser)
 
@@ -186,6 +203,15 @@ def generate(args):
         raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
     if not 0.0 <= args.motion_anchor_strength <= 1.0:
         raise ValueError("--motion_anchor_strength must be between 0 and 1")
+    if args.motion_anchor_lowpass_kernel and not args.motion_anchor_strength:
+        raise ValueError("--motion_anchor_lowpass_kernel requires --motion_anchor_strength")
+    if (args.boundary_probe_block is None) != (args.boundary_probe_dir is None):
+        raise ValueError("--boundary_probe_block and --boundary_probe_dir must be used together")
+    if args.boundary_probe_block is not None and args.boundary_probe_block < 1:
+        raise ValueError("--boundary_probe_block must be a later block (1 or greater)")
+    probe_dir = Path(args.boundary_probe_dir) if args.boundary_probe_dir else None
+    if probe_dir:
+        probe_dir.mkdir(parents=True, exist_ok=True)
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -492,14 +518,25 @@ def generate(args):
                     dt = dt / 1000
                     # latent = latent + (-noise_pred) * dt[0]
                     x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
+                    if probe_dir is not None and _ == args.boundary_probe_block:
+                        snapshot = capture_latent_pair(pre_latent, x0_pred)
+                        snapshot.update({"block_index": _, "step_index": i,
+                                         "timestep": float(timestep.item()),
+                                         "first_output_frame": block_start_frame(_)})
+                        torch.save(snapshot, probe_dir / f"block-{_}-step-{i}.pt")
                     if f > 0 and args.motion_anchor_strength > 0:
-                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength)
+                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength,
+                                                     lowpass_kernel=args.motion_anchor_lowpass_kernel)
                     latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
 
                 if f == 0:
                     _latent = latent
                     _videos = vae.decode(_latent.squeeze(0))
                 else:
+                    if probe_dir is not None and _ == args.boundary_probe_block:
+                        snapshot = capture_final_context(pre_latent, latent)
+                        snapshot.update({"block_index": _, "first_output_frame": block_start_frame(_)})
+                        torch.save(snapshot, probe_dir / f"block-{_}-final.pt")
                     _latent = torch.concat([pre_latent[:, -3:], latent], dim=1)
                     _videos = vae.decode(_latent.squeeze(0))[:, :, 9:]
                 pre_latent = latent

@@ -1,10 +1,11 @@
 """Experimental boundary conditioning for chunked latent generation."""
 
 import torch
+import torch.nn.functional as F
 
 
 def anchor_chunk_start(clean_latent: torch.Tensor, previous_latent: torch.Tensor,
-                       strength: float) -> torch.Tensor:
+                       strength: float, lowpass_kernel: int = 0) -> torch.Tensor:
     """Blend the first two clean latents toward the previous chunk's last latent.
 
     The first new latent receives ``strength``; the second receives one third
@@ -12,6 +13,8 @@ def anchor_chunk_start(clean_latent: torch.Tensor, previous_latent: torch.Tensor
     """
     if not 0.0 <= strength <= 1.0:
         raise ValueError("motion anchor strength must be between 0 and 1")
+    if lowpass_kernel not in (0, 3, 5, 9):
+        raise ValueError("motion anchor lowpass kernel must be 0, 3, 5, or 9")
     if (clean_latent.ndim != 4 or previous_latent.ndim != 4 or
             clean_latent.shape[0] != previous_latent.shape[0] or
             clean_latent.shape[2:] != previous_latent.shape[2:] or
@@ -22,7 +25,15 @@ def anchor_chunk_start(clean_latent: torch.Tensor, previous_latent: torch.Tensor
 
     anchored = clean_latent.clone()
     last = previous_latent[:, -1:]
-    anchored[:, :1] = torch.lerp(anchored[:, :1], last, strength)
+
+    def blend(source: torch.Tensor, weight: float) -> torch.Tensor:
+        if lowpass_kernel == 0:
+            return torch.lerp(source, last, weight)
+        correction = F.avg_pool2d(last - source, lowpass_kernel, stride=1,
+                                  padding=lowpass_kernel // 2, count_include_pad=False)
+        return source + weight * correction
+
+    anchored[:, :1] = blend(anchored[:, :1], strength)
     if anchored.shape[1] > 1:
-        anchored[:, 1:2] = torch.lerp(anchored[:, 1:2], last, strength / 3.0)
+        anchored[:, 1:2] = blend(anchored[:, 1:2], strength / 3.0)
     return anchored
