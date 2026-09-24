@@ -49,6 +49,6 @@ record comparative media, objective proxies, and qualitative limitations.
 - [x] Record exact commands, GPU, timings, metrics, media paths, and limitations
   in a benchmark note. State clearly that this is inference-time conditioning,
   not Vidu Self-Replay Forcing or Vivix's unpublished implementation.
-- [ ] Run `git diff --check`, targeted tests, and MP4 decode checks. Commit the
+- [x] Run `git diff --check`, targeted tests, and MP4 decode checks. Commit the
   isolated research branch and push only to the user's personal fork. Do not
   open an upstream PR.
