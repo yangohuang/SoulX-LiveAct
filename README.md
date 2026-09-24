@@ -250,6 +250,13 @@ motion more but worsened SyncNet scores. Both remain experimental; review the
 video's motion and lip sync before using either setting.
 See the [motion-continuity comparison](docs/benchmarks/2026-09-24-liveact-motion-continuity.md).
 
+`--motion_anchor_trend 0.5` optionally extrapolates the previous two clean
+latents as the anchor target; use it together with a positive
+`--motion_anchor_strength`. In a two-identity pilot it did not consistently
+beat the fixed anchor, so it remains research-only and off by default. This
+is an inference-time experiment, not a retrained forcing method. The default
+`0` retains the fixed anchor. See the [pilot](docs/benchmarks/2026-09-24-motion-trend-pilot.md).
+
 #### 5. Run with single GPU for Eval
 
 ```bash
@@ -291,6 +298,7 @@ python generate.py \
 | `--denoising_steps` | int | No | 3 | Use the original 3-step schedule or experimental 2-step schedule. |
 | `--resident_kv_steps` | int | No | 0 | Keep the first denoising step's FP8 KV cache on GPU (experimental 4090 setting). |
 | `--motion_anchor_strength` | float | No | 0 | Experimental chunk-start latent blending strength from 0 to 1. |
+| `--motion_anchor_trend` | float | No | 0 | Extrapolate prior latent motion for the anchor target from 0 to 1. Requires positive anchor strength. |
 
 
 ### 💻 GUI demo

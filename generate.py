@@ -163,6 +163,11 @@ def _parse_args():
         type=float,
         default=0.0,
         help="Experiment: blend the next chunk's first two clean latents toward the prior chunk (0 disables it).")
+    parser.add_argument(
+        "--motion_anchor_trend",
+        type=float,
+        default=0.0,
+        help="Experiment: extrapolate the previous two latents when anchoring the next chunk (0 keeps the fixed anchor).")
 
     add_low_memory_arguments(parser)
 
@@ -186,6 +191,10 @@ def generate(args):
         raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
     if not 0.0 <= args.motion_anchor_strength <= 1.0:
         raise ValueError("--motion_anchor_strength must be between 0 and 1")
+    if not 0.0 <= args.motion_anchor_trend <= 1.0:
+        raise ValueError("--motion_anchor_trend must be between 0 and 1")
+    if args.motion_anchor_trend and not args.motion_anchor_strength:
+        raise ValueError("--motion_anchor_trend requires --motion_anchor_strength")
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -493,7 +502,8 @@ def generate(args):
                     # latent = latent + (-noise_pred) * dt[0]
                     x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
                     if f > 0 and args.motion_anchor_strength > 0:
-                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength)
+                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength,
+                                                     trend=args.motion_anchor_trend)
                     latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
 
                 if f == 0:
