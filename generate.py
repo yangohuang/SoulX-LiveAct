@@ -26,6 +26,8 @@ from diffusers.utils import export_to_video
 
 from fp8_gemm import FP8GemmOptions, enable_fp8_gemm
 from fp4_gemm import FP4GemmOptions, enable_fp4_gemm
+from runtime_options import add_low_memory_arguments, allocate_kv_caches, maybe_compile
+from video_output import export_video_blocks
 
 
 torch.backends.cudnn.benchmark = True
@@ -119,6 +121,14 @@ def _parse_args():
         type=int,
         default=42,
         help="The seed to use for generating the image or video.")
+    parser.add_argument(
+        "--resident_kv_steps",
+        type=int,
+        choices=(0, 1),
+        default=0,
+        help="Keep the first denoising step's FP8 KV cache on GPU (requires free VRAM).")
+
+    add_low_memory_arguments(parser)
 
     args = parser.parse_args()
 
@@ -131,6 +141,8 @@ def torch_gc():
 
 
 def generate(args):
+    if args.resident_kv_steps and not (args.offload_cache and args.fp8_kv_cache and args.audio_cfg <= 1.0):
+        raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -172,41 +184,47 @@ def generate(args):
     frame_len = (height // (patch_size[1] * vae_stride[1])) * (width // (patch_size[2] * vae_stride[2]))
     kv_cache_tokens = frame_len * sum(blksz_lst) // world_size
     kv_cache_device = 'cpu' if args.offload_cache else device
-    kv_cache_dtype = torch.float8_e4m3fn if args.fp8_kv_cache else torch.bfloat16
-    kv_scale_shape = (1, kv_cache_tokens, 40, 1)
-    kv_cache = \
-        {
-            i: {
-                layer_id: {
-                    'k': torch.zeros([1, kv_cache_tokens, 40, 128], dtype=kv_cache_dtype, device=kv_cache_device),
-                    'v': torch.zeros([1, kv_cache_tokens, 40, 128], dtype=kv_cache_dtype, device=kv_cache_device),
-                    'k_scale': torch.ones(kv_scale_shape, dtype=torch.float32, device=kv_cache_device) if args.fp8_kv_cache else None,
-                    'v_scale': torch.ones(kv_scale_shape, dtype=torch.float32, device=kv_cache_device) if args.fp8_kv_cache else None,
-                    'mean_memory': args.mean_memory,
-                    'offload_cache': args.offload_cache,
-                    'fp8_kv_cache': args.fp8_kv_cache,
-                }
-                for layer_id in range(40)
-            } for i in range(len(timesteps) - 1)
-        }
-    if args.audio_cfg > 1.0:
-        kv_cache_null_audio = \
-            {
-                i: {layer_id: {
-                    'k': torch.zeros([1, kv_cache_tokens, 40, 128], dtype=kv_cache_dtype, device=kv_cache_device),
-                    'v': torch.zeros([1, kv_cache_tokens, 40, 128], dtype=kv_cache_dtype, device=kv_cache_device),
-                    'k_scale': torch.ones(kv_scale_shape, dtype=torch.float32, device=kv_cache_device) if args.fp8_kv_cache else None,
-                    'v_scale': torch.ones(kv_scale_shape, dtype=torch.float32, device=kv_cache_device) if args.fp8_kv_cache else None,
-                    'mean_memory': args.mean_memory,
-                    'offload_cache': args.offload_cache,
-                    'fp8_kv_cache': args.fp8_kv_cache,
-                } for layer_id in range(40)} for i in range(len(timesteps) - 1)
-            }
+    kv_cache = None
+    kv_cache_null_audio = None
 
-    wan_i2v_model = WanModel.from_pretrained(args.ckpt_dir, torch_dtype=torch.bfloat16, low_cpu_mem_usage=False)
+    # Pre-encode all prompts with T5, then free it BEFORE loading the 14B DiT.
+    # On a 62G-RAM box, T5 (11G) + DiT (28G) resident together would trigger the OOM killer.
+    with open(args.input_json, 'r', encoding='utf-8') as f:
+        _pre_input_data = json.load(f)
+    text_encoder = T5EncoderModel(text_len=512, dtype=torch.bfloat16, device='cpu' if args.t5_cpu else device,
+                                  checkpoint_path=os.path.join(args.ckpt_dir, 'models_t5_umt5-xxl-enc-bf16.pth'),
+                                  tokenizer_path=os.path.join(args.ckpt_dir, 'google/umt5-xxl'))
+    precomputed_ctx = []
+    for _data in _pre_input_data:
+        _ctx = [text_encoder(texts=_data['prompt'], device='cpu' if args.t5_cpu else device)[0].to('cpu', dtype=torch.bfloat16)]
+        _edit = {
+            k: text_encoder(texts=v, device='cpu' if args.t5_cpu else device)[0].to('cpu', dtype=torch.bfloat16)
+            for k, v in _data.get('edit_prompt', {}).items()
+        }
+        precomputed_ctx.append((_ctx, _edit))
+    text_encoder.model = None
+    del text_encoder
+    torch_gc()
+
+    wan_i2v_model = WanModel.from_pretrained(args.ckpt_dir, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True)
     wan_i2v_model = wan_i2v_model.to(dtype=torch.bfloat16)
     for n in range(40):
         wan_i2v_model.blocks[n].self_attn.init_kvidx(frame_len, world_size)
+
+    if args.fp8_gemm:
+        enable_fp8_gemm(wan_i2v_model, options=FP8GemmOptions())
+        if args.block_offload:
+            # Quantize block by block before loading auxiliary models so their
+            # BF16 weights do not coexist with the full-precision DiT on CPU.
+            # Keep the original lazy path when block offloading is disabled.
+            from fp8_gemm import FP8Linear
+            _quant_dev = torch.device(f"cuda:{device}")
+            for _blk in wan_i2v_model.blocks:
+                for _m in _blk.modules():
+                    if isinstance(_m, FP8Linear):
+                        _m.materialize_fp8_weight(_quant_dev)
+                _blk.to('cpu')
+            torch_gc()
 
     vae = LightVAE(vae_path=os.path.join(args.ckpt_dir, 'Wan2.1_VAE.pth'), dtype=torch.bfloat16, device=device,
                    use_lightvae=False, parallel=(world_size > 1))
@@ -215,10 +233,6 @@ def generate(args):
         checkpoint_path=os.path.join(args.ckpt_dir, 'models_clip_open-clip-xlm-roberta-large-vit-huge-14.pth'),
         tokenizer_path=os.path.join(args.ckpt_dir, 'xlm-roberta-large'), dtype=torch.bfloat16, device=device)
     clip.model = clip.model.to(device, dtype=torch.bfloat16)
-
-    text_encoder = T5EncoderModel(text_len=512, dtype=torch.bfloat16, device='cpu' if args.t5_cpu else device,
-                                  checkpoint_path=os.path.join(args.ckpt_dir, 'models_t5_umt5-xxl-enc-bf16.pth'),
-                                  tokenizer_path=os.path.join(args.ckpt_dir, 'google/umt5-xxl'))
 
     audio_encoder = Wav2Vec2Model.from_pretrained(
         args.wav2vec_dir, local_files_only=True, torch_dtype=torch.bfloat16
@@ -231,8 +245,6 @@ def generate(args):
         for name, param in _model.named_parameters():
             param.requires_grad = False
 
-    if args.fp8_gemm:
-        enable_fp8_gemm(wan_i2v_model, options=FP8GemmOptions())
     if args.fp4_gemm:
         print("Enabling FP4 GEMM acceleration...")
         def filter_fn(name, module):
@@ -246,14 +258,15 @@ def generate(args):
                 child.to(device)
         wan_i2v_model.enable_block_offload(
             onload_device=torch.device(f"cuda:{device}"),
+            pin_cpu_memory=not args.pageable_block_memory,
         )
     else:
         wan_i2v_model = wan_i2v_model.to(device)
     wan_i2v_model.eval()
-    wan_i2v_model = torch.compile(wan_i2v_model)
+    wan_i2v_model = maybe_compile(wan_i2v_model, not args.disable_compile, torch.compile)
 
     vae.model.eval()
-    vae.encode = torch.compile(vae.encode)
+    vae.encode = maybe_compile(vae.encode, not args.disable_compile, torch.compile)
 
     torch_gc()
 
@@ -267,19 +280,17 @@ def generate(args):
     with open(args.input_json, 'r', encoding='utf-8') as f:
         input_data = json.load(f)
 
-    for data in input_data:
+    for _item_idx, data in enumerate(input_data):
         image_path = data['cond_image']
         audio_path = data['cond_audio']
         out_path = os.path.basename(image_path).split('.')[0] + '_' + os.path.basename(audio_path).split('.')[0] + '.mp4'
         prompt = data['prompt']
         edit_prompts = data.get('edit_prompt', {})
 
-        context = [text_encoder(texts=prompt, device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)]
-        if edit_prompts:
-            edit_prompts = {
-                k: text_encoder(texts=v, device='cpu' if args.t5_cpu else device)[0].to(device, dtype=torch.bfloat16)
-                for k, v in edit_prompts.items()
-            }
+        cpu_context, cpu_edit_prompts = precomputed_ctx[_item_idx]
+        context = [embedding.to(device) for embedding in cpu_context]
+        edit_prompts = {key: embedding.to(device) for key, embedding in cpu_edit_prompts.items()}
+        precomputed_ctx[_item_idx] = None
 
         image = Image.open(image_path).convert("RGB")
         cond_image = transform(image).unsqueeze(1).unsqueeze(0).to(device, torch.bfloat16)  # 1 C 1 H W
@@ -314,6 +325,21 @@ def generate(args):
             return y
 
         y = get_y(frame_num)
+
+        if kv_cache is None:
+            kv_cache, kv_cache_null_audio = allocate_kv_caches(
+                token_count=kv_cache_tokens,
+                step_count=len(timesteps) - 1,
+                layer_count=40,
+                device=kv_cache_device,
+                fp8=args.fp8_kv_cache,
+                mean_memory=args.mean_memory,
+                offload=args.offload_cache,
+                audio_cfg=args.audio_cfg,
+                resident_steps=args.resident_kv_steps,
+                onload_device=f"cuda:{device}",
+                blocking_cpu_copy=args.pageable_block_memory,
+            )
 
         iter_total_num = int(audio_len / (vae_stride[0] * blksz_lst[-1] / fps)) + 1
         print('----iter_total_num=', iter_total_num)
@@ -391,13 +417,19 @@ def generate(args):
         torch.cuda.synchronize()
         # torch_gc()
 
-        videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
         video_path = 'tmp.mp4'
-        export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
+        if args.pageable_block_memory:
+            export_video_blocks(gen_video_list, video_path, fps)
+        else:
+            videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
+            export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
         add_audio_to_video(video_path, audio_path, out_path)
 
         torch.cuda.synchronize()
-        # torch_gc()
+        del context, edit_prompts, _context, arg_c
+        if args.audio_cfg > 1.0:
+            del arg_null_audio
+        torch_gc()
 
     if dist.is_initialized():
         dist.destroy_process_group()

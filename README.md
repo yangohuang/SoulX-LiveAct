@@ -175,19 +175,49 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535)  \
 ```
 
 #### 4. Run on RTX 4090/RTX 5090 GPUs
-**Note:** FP8 KV cache may slightly affect generation quality.
+On a 24 GB RTX 4090 with 64 GB host RAM, use FP8 weights, FP8 CPU KV cache,
+and block offload together. FP8 quantization can affect image quality.
+`--disable_compile` avoids the first-run compile cost. `--pageable_block_memory`
+keeps all 40 offloaded DiT blocks from being pinned in host memory.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 python generate.py \
-    --size 416*720 \
+    --size '416*720' \
     --ckpt_dir MODEL_PATH \
     --wav2vec_dir chinese-wav2vec2-base \
     --fps 24 \
     --input_json examples/example.json \
+    --fp8_gemm \
     --fp8_kv_cache \
+    --offload_cache \
     --block_offload \
-    --t5_cpu
+    --pageable_block_memory \
+    --t5_cpu \
+    --disable_compile
 ```
+
+Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 5-second audio excerpt
+produced a 117-frame, 24 fps H.264/AAC video. Four generation blocks took 24.9,
+21.5, 21.4 and 21.4 seconds, with a 465-second cold start through MP4 completion.
+The sampled minimum host `MemAvailable` was 13.3 GiB. On a separate identical
+0.5-second input, FP8 reduced one-block generation from 629 to 24.5 seconds
+versus BF16 weights. This configuration is still far from real time. See the
+[4090 benchmark](docs/benchmarks/2026-09-23-liveact-4090.md) for inputs,
+measurements and GPU memory. The low-memory option also avoids accumulated
+pinned KV copies and writes decoded blocks to MP4 one at a time, avoiding a
+full-video export memory peak. Without
+`--pageable_block_memory`, block offload retains its original pinned-memory
+and video export behavior.
+
+On an otherwise idle 24 GB card, add `--resident_kv_steps 1` to keep the
+first denoising step's FP8 KV cache on the GPU. The three-step schedule stays
+unchanged; later-step caches remain CPU-offloaded. This option needs
+`--fp8_kv_cache`, `--offload_cache`, and `--audio_cfg` no greater than 1.0.
+It checks free GPU memory before allocating the additional cache and is off
+by default. A 30-second `416*720` test reduced the later 32-frame block median
+from 21.573 to 19.137 seconds (11.3%); sampled whole-GPU peak rose from
+9.00 to 16.35 GiB. Both runs produced byte-identical 722-frame MP4 files.
+Output video can be encoded at 24 fps, but inference is not real time.
 
 #### 5. Run with single GPU for Eval
 
@@ -219,7 +249,11 @@ python generate.py \
 | `--steam_audio`   | bool  | No       | false   | Whether inference with steaming audio.                                                        |
 | `--mean_memory`   | bool  | No       | false   | Whether to use the mean memory strategy during inference for further performance improvement. |
 | `--fp8_kv_cache`   | bool  | No       | false   | Whether to store kv cache in FP8 and dequantize to BF16 on use. FP8 KV cache may slightly affect generation quality.|
+| `--fp8_gemm`       | bool  | No       | false   | Quantize linear weights to FP8 and use FP8 GEMM; conversion increases cold-start time. |
 | `--block_offload`   | bool  | No       | false   | Whether to offload model blocks to CPU between block forwards.|
+| `--disable_compile` | bool  | No       | false   | Skip `torch.compile` to reduce cold-start time and memory. |
+| `--pageable_block_memory` | bool | No | false | Keep CPU-offloaded DiT weights pageable to reduce host RAM use. |
+| `--resident_kv_steps` | int | No | 0 | Keep the first FP8 KV cache on GPU when set to 1; requires CPU KV offload and free VRAM. |
 
 
 ### 💻 GUI demo
@@ -244,6 +278,8 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535) \
 ```
 
 #### 2. Run on RTX 4090/RTX 5090 GPUs
+The 4090 measurements above apply to `generate.py`. The GUI `demo.py` path still
+places its KV cache on GPU and has not been verified on a 24 GB card.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 torchrun --nproc_per_node=1 --master_port=$(shuf -n 1 -i 10000-65535) \
