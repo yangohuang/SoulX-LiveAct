@@ -1,5 +1,35 @@
 # RTX 4090: profile, startup cache, and denoising-step comparison
 
+## Integrated-branch smoke test
+
+The integrated branch was checked on the same RTX 4090 with three denoising
+steps, the offline FP8 and prompt caches, `--resident_kv_steps 1`, and
+`--stream_video_output`. For the 1.5-second audio fixture, cached startup to
+ready was 6.996 s; the first and second blocks took 18.296 s and 19.192 s.
+The output has 38 video frames at 24 fps and 1.500 s of audio. Both streams
+passed complete FFmpeg decoding. This is a functional smoke test, not a new
+same-run performance A/B or a quality assessment.
+
+## What transfers from the RTX 5090 path
+
+The [unofficial RTX 5090 optimization fork](https://github.com/5461gpt/SoulX-LiveAct-RTX5090)
+reports a warm 256×416, 15 fps, three-step profile with a prequantized NVFP4
+checkpoint, persistent compilation and conditioning caches, fixed-shape
+warmup, VAE temporal decoding, and HLS output. Its [reproduction guide](https://github.com/5461gpt/SoulX-LiveAct-RTX5090/blob/main/docs/RTX5090_REPRODUCTION_GUIDE_ZH-TW.md)
+specifies an SM120 GPU and reports roughly 2.1 s to a deliverable first
+chunk. Those figures are not comparable to this 416×720, 24 fps, FP8 RTX 4090
+run. NVFP4 kernels require Blackwell hardware and are not a portable 4090
+optimization.
+
+The transferable startup idea is to prepare weights and prompt embeddings
+offline, which this branch implements in FP8. The transferable long-request
+idea is bounded output buffering, implemented here by the optional block
+writer. The fork's [prepared conditioning](https://github.com/5461gpt/SoulX-LiveAct-RTX5090/blob/main/docs/PREPARED_CONDITIONING_CACHE_BENCHMARK_ZH-TW.md)
+and [VAE temporal cache](https://github.com/5461gpt/SoulX-LiveAct-RTX5090/blob/main/docs/VAE_TEMPORAL_CACHE_BENCHMARK_ZH-TW.md)
+remain separate experiments: the latter changes the decoder's temporal
+boundary behavior, and neither has been validated on this 4090 path. Our
+profiler identifies weight and KV transfers as the first throughput targets.
+
 Measured locally on a 24 GB RTX 4090, 62 GiB host RAM, PyTorch 2.8.0+cu128.
 The single-GPU command used `416*720`, 24 fps, seed 42, FP8 GEMM, FP8 CPU KV
 cache, block offload, CPU T5, and disabled `torch.compile`. The comparison
