@@ -36,6 +36,7 @@ from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
 from temporal_continuity import anchor_chunk_start
 from boundary_probe import block_start_frame, capture_latent_pair, capture_final_context
+from rollout_capture import save_rollout_block
 
 
 torch.backends.cudnn.benchmark = True
@@ -180,6 +181,11 @@ def _parse_args():
         type=str,
         default=None,
         help="Directory for --boundary_probe_block snapshots.")
+    parser.add_argument(
+        "--rollout_latent_dir",
+        type=str,
+        default=None,
+        help="Experiment: save every generated block's final clean latent for offline training.")
 
     add_low_memory_arguments(parser)
 
@@ -212,6 +218,7 @@ def generate(args):
     probe_dir = Path(args.boundary_probe_dir) if args.boundary_probe_dir else None
     if probe_dir:
         probe_dir.mkdir(parents=True, exist_ok=True)
+    rollout_dir = Path(args.rollout_latent_dir) if args.rollout_latent_dir else None
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -529,6 +536,8 @@ def generate(args):
                                                      lowpass_kernel=args.motion_anchor_lowpass_kernel)
                     latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
 
+                if rollout_dir is not None:
+                    save_rollout_block(rollout_dir, _, latent)
                 if f == 0:
                     _latent = latent
                     _videos = vae.decode(_latent.squeeze(0))
