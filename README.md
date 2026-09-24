@@ -240,6 +240,16 @@ at 17.13 GiB. This option remains disabled by default.
 See the [4090 profile and cache comparison](docs/benchmarks/2026-09-24-liveact-4090-profile-cache-steps.md)
 for the profiler attribution, cold-start timings, and longer-run results.
 
+`--motion_anchor_strength 0.25` is an opt-in continuity experiment. During
+sampling, it blends the first two denoised latents of each new chunk toward
+the previous chunk's final latent. The default is `0`, preserving the original
+output path. On one 30-second 4090 fixture, it lowered mean frame change in
+the first eight frames after chunk boundaries by 17.8%, while a local SyncNet
+comparison showed similar lip-sync scores. A stronger 0.45 setting smoothed
+motion more but worsened SyncNet scores. Both remain experimental; review the
+video's motion and lip sync before using either setting.
+See the [motion-continuity comparison](docs/benchmarks/2026-09-24-liveact-motion-continuity.md).
+
 #### 5. Run with single GPU for Eval
 
 ```bash
@@ -280,6 +290,7 @@ python generate.py \
 | `--serve_stdin` | bool | No | false | Keep models resident and accept JSON-line requests for pre-encoded prompts. |
 | `--denoising_steps` | int | No | 3 | Use the original 3-step schedule or experimental 2-step schedule. |
 | `--resident_kv_steps` | int | No | 0 | Keep the first denoising step's FP8 KV cache on GPU (experimental 4090 setting). |
+| `--motion_anchor_strength` | float | No | 0 | Experimental chunk-start latent blending strength from 0 to 1. |
 
 
 ### 💻 GUI demo

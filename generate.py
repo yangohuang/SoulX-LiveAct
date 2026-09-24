@@ -34,6 +34,7 @@ from denoising_schedule import denoising_schedule
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
+from temporal_continuity import anchor_chunk_start
 
 
 torch.backends.cudnn.benchmark = True
@@ -157,6 +158,11 @@ def _parse_args():
         choices=(0, 1),
         default=0,
         help="Experiment: keep the first denoising step's FP8 KV cache on GPU (about 6.4 GiB at 416x720).")
+    parser.add_argument(
+        "--motion_anchor_strength",
+        type=float,
+        default=0.0,
+        help="Experiment: blend the next chunk's first two clean latents toward the prior chunk (0 disables it).")
 
     add_low_memory_arguments(parser)
 
@@ -178,6 +184,8 @@ def generate(args):
         raise ValueError("--build_fp8_cache requires --fp8_cache_dir")
     if args.resident_kv_steps and not (args.offload_cache and args.fp8_kv_cache and args.audio_cfg <= 1.0):
         raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
+    if not 0.0 <= args.motion_anchor_strength <= 1.0:
+        raise ValueError("--motion_anchor_strength must be between 0 and 1")
     rank = int(os.getenv("RANK", 0))
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
@@ -484,6 +492,8 @@ def generate(args):
                     dt = dt / 1000
                     # latent = latent + (-noise_pred) * dt[0]
                     x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
+                    if f > 0 and args.motion_anchor_strength > 0:
+                        x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength)
                     latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
 
                 if f == 0:
