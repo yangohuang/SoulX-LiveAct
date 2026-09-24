@@ -195,6 +195,15 @@ python generate.py \
     --disable_compile
 ```
 
+Upstream already provides the FP8 GEMM, FP8 KV, CPU KV offload, and block
+offload switches. This branch changes their startup and memory behavior;
+it does not introduce those kernels. On our 4090, the unmodified upstream
+README command ran out of GPU memory before generation, while adding its
+existing `--offload_cache --fp8_gemm` switches ran out of host memory during
+initialization. See the [clean-upstream comparison](docs/benchmarks/2026-09-23-liveact-4090.md)
+for the exact inputs and failure points. The tested environment used the
+independent CLIP SDPA fallback from PR #19 because `flash-attn` was absent.
+
 Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 5-second audio excerpt
 produced a 117-frame, 24 fps H.264/AAC video. Four generation blocks took 24.9,
 21.5, 21.4 and 21.4 seconds, with a 465-second cold start through MP4 completion.
