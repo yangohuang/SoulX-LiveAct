@@ -83,8 +83,5 @@ def add_audio_to_video(silent_video_path: str, audio_video_path: str, output_vid
         output_video_path
     ]
 
-    try:
-        exec_cmd(cmd)
-        print(f"Video with audio generated successfully: {output_video_path}")
-    except subprocess.CalledProcessError as e:
-        print(f"Error occurred: {e}")
+    exec_cmd(cmd)
+    print(f"Video with audio generated successfully: {output_video_path}")

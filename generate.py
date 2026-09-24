@@ -9,6 +9,7 @@ from tqdm import tqdm
 import argparse
 import json
 import sys
+import subprocess
 from contextlib import nullcontext
 from pathlib import Path
 
@@ -522,7 +523,13 @@ def generate(args):
             videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
             export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
             del videos
-        add_audio_to_video(video_path, audio_path, out_path)
+        try:
+            add_audio_to_video(video_path, audio_path, out_path)
+        except subprocess.CalledProcessError as error:
+            if not args.serve_stdin:
+                raise
+            report_request_error(error)
+            continue
         if args.serve_stdin:
             print('LIVEACT_RESULT ' + json.dumps({
                 'output_path': out_path,
