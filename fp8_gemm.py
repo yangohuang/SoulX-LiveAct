@@ -89,8 +89,9 @@ class FP8Linear(nn.Module):
                          if linear.bias is not None else None)
             # Stash FP16 weights on CPU to immediately free GPU VRAM. We keep
             # them until FP8 weights are materialized, then optionally discard.
-            self._fp16_weight_cpu = linear.weight.detach().to(device="cpu", dtype=torch.bfloat16).contiguous()
-            if linear.bias is not None:
+            self._fp16_weight_cpu = (None if linear.weight.is_meta else
+                                     linear.weight.detach().to(device="cpu", dtype=torch.bfloat16).contiguous())
+            if linear.bias is not None and not linear.bias.is_meta:
                 self._fp16_bias_cpu = linear.bias.detach().to(device="cpu", dtype=torch.bfloat16).contiguous()
 
         # vLLM FP8 GEMM plumbing. We avoid reading vLLM global config, so we
@@ -141,8 +142,15 @@ class FP8Linear(nn.Module):
         elif self._fp16_weight_cpu is not None:
             src_weight = self._fp16_weight_cpu.detach()
             src_bias = self._fp16_bias_cpu.detach() if self._fp16_bias_cpu is not None else None
+        elif self._fp8_weight is not None:
+            # FP8-only source (fp16 discarded): build the module from a zero
+            # placeholder; the real fp8 buffers are cloned below and the
+            # placeholder copies are dropped before returning.
+            k_in, n_out = self._fp8_weight.shape  # _fp8_weight is the [K, N] transposed view
+            src_weight = torch.zeros(n_out, k_in, dtype=torch.bfloat16)
+            src_bias = self.bias.detach() if self.bias is not None else None
         else:
-            raise RuntimeError("FP8Linear cannot be deep-copied without an FP16 weight source.")
+            raise RuntimeError("FP8Linear cannot be deep-copied without an FP16 or FP8 weight source.")
 
         linear = nn.Linear(
             in_features=src_weight.shape[1],
@@ -170,6 +178,9 @@ class FP8Linear(nn.Module):
 
         cloned._weight_cache_device = self._weight_cache_device
         cloned._last_weight_version = self._last_weight_version
+        if self.linear is None and self._fp16_weight_cpu is None:
+            cloned._fp16_weight_cpu = None
+            cloned._fp16_bias_cpu = None
         return cloned
 
     def invalidate_weight_cache(self) -> None:
@@ -343,5 +354,4 @@ def enable_fp8_gemm(
 
     _recurse("", model)
     return model
-
 

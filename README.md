@@ -175,19 +175,77 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535)  \
 ```
 
 #### 4. Run on RTX 4090/RTX 5090 GPUs
-**Note:** FP8 KV cache may slightly affect generation quality.
+On a 24 GB RTX 4090 with 64 GB host RAM, use FP8 weights, FP8 CPU KV cache,
+and block offload together. FP8 quantization can affect image quality.
+`--disable_compile` avoids the first-run compile cost. Block weights remain in
+pageable CPU memory by default so all 40 DiT blocks are not pinned at once.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 python generate.py \
-    --size 416*720 \
+    --size '416*720' \
     --ckpt_dir MODEL_PATH \
     --wav2vec_dir chinese-wav2vec2-base \
     --fps 24 \
     --input_json examples/example.json \
+    --fp8_gemm \
     --fp8_kv_cache \
+    --offload_cache \
     --block_offload \
-    --t5_cpu
+    --t5_cpu \
+    --disable_compile
 ```
+
+Verified at `416*720` on an RTX 4090 and 64 GB RAM: a 5-second audio excerpt
+produced a 117-frame, 24 fps H.264/AAC video. Four generation blocks took 24.9,
+21.5, 21.4 and 21.4 seconds, with a 465-second cold start through MP4 completion.
+The sampled minimum host `MemAvailable` was 13.3 GiB. On a separate identical
+0.5-second input, FP8 reduced one-block generation from 629 to 24.5 seconds
+versus BF16 weights. This configuration is still far from real time. See the
+[4090 benchmark](docs/benchmarks/2026-09-23-liveact-4090.md) for inputs,
+measurements and GPU memory. `--pin_block_memory` requires substantially more
+free host RAM.
+
+For repeated use, add `--fp8_cache_dir /path/to/dit-fp8-cache`,
+`--build_fp8_cache`, and `--prompt_cache_dir /path/to/prompt-cache` to the
+command above once. The FP8 cache is written after quantization; the prompt cache stores T5
+embeddings for the exact prompts in `--input_json`. Later runs use the same
+cache paths without `--build_fp8_cache`, avoiding BF16 DiT loading, FP8
+conversion, and T5 encoding. The FP8 cache occupied 18 GB in our 4090 test;
+building it once peaked at about 54.4 GiB process RSS. Caches are invalidated
+when their source checkpoint files change size or modification time.
+
+`--serve_stdin` keeps the loaded models resident. It prints `LIVEACT_READY`
+and then accepts one JSON object per input line with `prompt`, `cond_image`,
+`cond_audio`, and optional `output_path`. All prompt and edit-prompt values
+must be listed in `--input_json` at startup; the 64 GB host-RAM setup does not
+keep T5 alongside the DiT for arbitrary new prompts. Malformed requests
+receive `LIVEACT_ERROR` while the worker stays resident. Completed requests
+print `LIVEACT_RESULT` with their output path and elapsed time. In a 1.5-second
+audio test, the first request took 55.4 seconds and an identical second request
+took 42.0 seconds in the same process. This improves response latency,
+not steady generated FPS.
+
+`--denoising_steps 2` is an optional quality/speed experiment; the default
+3-step schedule is unchanged. On a 5-second 4090 input, steady blocks fell
+from about 21.4 to 14.8 seconds, while frame-to-frame changes increased.
+Review the output's motion and lip sync before using two steps for production.
+
+`--resident_kv_steps 1` is a separate experiment that keeps the first
+denoising step's FP8 KV cache on the GPU while the other steps remain
+CPU-offloaded. It requires `--fp8_kv_cache`, `--offload_cache`, and
+`--audio_cfg` no greater than 1.0. At `416*720`, it adds about 6.4 GiB of persistent GPU KV
+storage. In a 5-second test with the original three steps, the steady block
+median fell from 21.34 to 18.89 seconds; sampled process GPU memory peaked
+at 17.13 GiB. This option remains disabled by default.
+
+`--stream_video_output` writes each decoded block into the MP4 encoder instead
+of retaining all decoded frames in host RAM until generation ends. It is
+optional. On a 30-second 4090 input, sampled peak process RSS fell from
+40,607 to 36,831 MiB, while steady generation stayed near 19 seconds per
+block. The output MP4 still becomes playable only after encoding finishes and
+audio is added; this flag does not make model inference real-time.
+See the [4090 profile and cache comparison](docs/benchmarks/2026-09-24-liveact-4090-profile-cache-steps.md)
+for the profiler attribution, cold-start timings, and longer-run results.
 
 #### 5. Run with single GPU for Eval
 
@@ -219,7 +277,17 @@ python generate.py \
 | `--steam_audio`   | bool  | No       | false   | Whether inference with steaming audio.                                                        |
 | `--mean_memory`   | bool  | No       | false   | Whether to use the mean memory strategy during inference for further performance improvement. |
 | `--fp8_kv_cache`   | bool  | No       | false   | Whether to store kv cache in FP8 and dequantize to BF16 on use. FP8 KV cache may slightly affect generation quality.|
+| `--fp8_gemm`       | bool  | No       | false   | Quantize linear weights to FP8 and use FP8 GEMM; conversion increases cold-start time. |
 | `--block_offload`   | bool  | No       | false   | Whether to offload model blocks to CPU between block forwards.|
+| `--disable_compile` | bool  | No       | false   | Skip `torch.compile` to reduce cold-start time and memory. |
+| `--pin_block_memory` | bool | No       | false   | Pin all CPU-offloaded DiT weights for faster transfers. Requires substantially more host RAM. |
+| `--fp8_cache_dir` | str | No | - | Load an offline FP8 DiT cache; requires FP8 GEMM and block offload. |
+| `--build_fp8_cache` | bool | No | false | Build the FP8 cache once from BF16 weights. |
+| `--prompt_cache_dir` | str | No | - | Read or build T5 embeddings for the exact prompt catalog. |
+| `--serve_stdin` | bool | No | false | Keep models resident and accept JSON-line requests for pre-encoded prompts. |
+| `--denoising_steps` | int | No | 3 | Use the original 3-step schedule or experimental 2-step schedule. |
+| `--resident_kv_steps` | int | No | 0 | Keep the first denoising step's FP8 KV cache on GPU (experimental 4090 setting). |
+| `--stream_video_output` | bool | No | false | Encode decoded blocks as they are produced instead of retaining the whole video in host RAM. |
 
 
 ### 💻 GUI demo
@@ -244,6 +312,8 @@ torchrun --nproc_per_node=2 --master_port=$(shuf -n 1 -i 10000-65535) \
 ```
 
 #### 2. Run on RTX 4090/RTX 5090 GPUs
+The 4090 measurements above apply to `generate.py`. The GUI `demo.py` path still
+places its KV cache on GPU and has not been verified on a 24 GB card.
 ```bash
 USE_CHANNELS_LAST_3D=1 CUDA_VISIBLE_DEVICES=0 \
 torchrun --nproc_per_node=1 --master_port=$(shuf -n 1 -i 10000-65535) \

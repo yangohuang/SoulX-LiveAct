@@ -209,12 +209,15 @@ class WanSelfAttention(nn.Module):
                                     device=f'cuda:{int(os.getenv("RANK", 0))}')
 
     def _move_kv_cache_to_device(self, kv_cache, device):
-        kv_cache["k"] = kv_cache["k"].to(device=device, non_blocking=True)
-        kv_cache["v"] = kv_cache["v"].to(device=device, non_blocking=True)
+        # Async CUDA->CPU copies allocate pinned host storage for every cache
+        # tensor. With 40 layers this can exhaust a 64 GiB host during streaming.
+        non_blocking = torch.device(device).type != 'cpu'
+        kv_cache["k"] = kv_cache["k"].to(device=device, non_blocking=non_blocking)
+        kv_cache["v"] = kv_cache["v"].to(device=device, non_blocking=non_blocking)
         if kv_cache.get("k_scale") is not None:
-            kv_cache["k_scale"] = kv_cache["k_scale"].to(device=device, non_blocking=True)
+            kv_cache["k_scale"] = kv_cache["k_scale"].to(device=device, non_blocking=non_blocking)
         if kv_cache.get("v_scale") is not None:
-            kv_cache["v_scale"] = kv_cache["v_scale"].to(device=device, non_blocking=True)
+            kv_cache["v_scale"] = kv_cache["v_scale"].to(device=device, non_blocking=non_blocking)
 
     def _quantize_kv_tensor(self, kv):
         fp8_max = torch.finfo(torch.float8_e4m3fn).max
@@ -622,10 +625,11 @@ class AudioProjModel(ModelMixin, ConfigMixin):
 
 
 from torch.utils.checkpoint import checkpoint
+from runtime_options import offload_blocks
 
 
 class WanBlockOffloadManager:
-    def __init__(self, blocks, onload_device, offload_device='cpu'):
+    def __init__(self, blocks, onload_device, offload_device='cpu', pin_cpu_memory=True):
         self.blocks = blocks
         self.onload_device = torch.device(onload_device)
         self.offload_device = torch.device(offload_device)
@@ -639,9 +643,12 @@ class WanBlockOffloadManager:
             copy.deepcopy(self.blocks[0]).to(self.onload_device),
         ])
 
-        for block in self.blocks:
-            block.to(self.offload_device)
-            self._pin_module_memory(block)
+        offload_blocks(
+            self.blocks,
+            self.offload_device,
+            pin_cpu_memory,
+            self._pin_module_memory,
+        )
 
     def _copy_tensor(self, dst, src):
         dst.copy_(src, non_blocking=True)
@@ -931,7 +938,7 @@ class WanModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         ],
             dim=1)
 
-    def enable_block_offload(self, onload_device=None, offload_device='cpu'):
+    def enable_block_offload(self, onload_device=None, offload_device='cpu', pin_cpu_memory=True):
         if onload_device is None:
             onload_device = self.patch_embedding.weight.device
         onload_device = torch.device(onload_device)
@@ -942,6 +949,7 @@ class WanModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
             self.blocks,
             onload_device=onload_device,
             offload_device=offload_device,
+            pin_cpu_memory=pin_cpu_memory,
         )
         self.block_offload_enabled = True
         torch.cuda.empty_cache()
