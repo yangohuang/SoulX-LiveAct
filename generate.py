@@ -34,7 +34,7 @@ from denoising_schedule import denoising_schedule
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
-from temporal_continuity import anchor_chunk_start
+from temporal_continuity import anchor_chunk_start, should_anchor_step
 from boundary_probe import (block_start_frame, capture_latent_pair, capture_final_context,
                             pre_output_boundary_metrics, write_boundary_signal)
 from rollout_capture import save_rollout_block
@@ -172,6 +172,10 @@ def _parse_args():
         default="hold",
         help="Experiment: hold the last prior latent or extrapolate its final velocity (default: hold).")
     parser.add_argument(
+        "--motion_anchor_skip_last_step",
+        action="store_true",
+        help="Experiment: apply velocity anchoring at earlier denoising steps, but skip the final step.")
+    parser.add_argument(
         "--motion_anchor_lowpass_kernel",
         type=int,
         choices=(0, 3, 5, 9),
@@ -220,6 +224,9 @@ def generate(args):
         raise ValueError("--resident_kv_steps requires --offload_cache, --fp8_kv_cache, and audio_cfg<=1")
     if not 0.0 <= args.motion_anchor_strength <= 1.0:
         raise ValueError("--motion_anchor_strength must be between 0 and 1")
+    if args.motion_anchor_skip_last_step and (not args.motion_anchor_strength or
+                                              args.motion_anchor_mode != "velocity"):
+        raise ValueError("--motion_anchor_skip_last_step requires a nonzero velocity anchor")
     if args.motion_anchor_lowpass_kernel and not args.motion_anchor_strength:
         raise ValueError("--motion_anchor_lowpass_kernel requires --motion_anchor_strength")
     if (args.boundary_probe_block is None) != (args.boundary_probe_dir is None):
@@ -556,7 +563,9 @@ def generate(args):
                                          "timestep": float(timestep.item()),
                                          "first_output_frame": block_start_frame(_)})
                         torch.save(snapshot, probe_dir / f"block-{_}-step-{i}.pt")
-                    if f > 0 and args.motion_anchor_strength > 0:
+                    if f > 0 and should_anchor_step(
+                            i, len(timesteps) - 1, args.motion_anchor_strength,
+                            skip_last=args.motion_anchor_skip_last_step):
                         x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength,
                                                      lowpass_kernel=args.motion_anchor_lowpass_kernel,
                                                      mode=args.motion_anchor_mode)
@@ -599,6 +608,7 @@ def generate(args):
                                   settings={"size": args.size, "fps": fps,
                                             "denoising_steps": args.denoising_steps,
                                             "motion_anchor_strength": args.motion_anchor_strength,
+                                            "motion_anchor_skip_last_step": args.motion_anchor_skip_last_step,
                                             "fp8_gemm": args.fp8_gemm, "fp8_kv_cache": args.fp8_kv_cache,
                                             "block_offload": args.block_offload,
                                             "resident_kv_steps": args.resident_kv_steps})

@@ -4,6 +4,16 @@ import torch
 import torch.nn.functional as F
 
 
+def should_anchor_step(step_index: int, step_count: int, strength: float,
+                       skip_last: bool = False) -> bool:
+    """Choose an experimental anchor schedule without changing the default."""
+    if step_count < 1 or not 0 <= step_index < step_count:
+        raise ValueError("denoising step index must be within the step count")
+    if not 0.0 <= strength <= 1.0:
+        raise ValueError("motion anchor strength must be between 0 and 1")
+    return strength > 0.0 and not (skip_last and step_index == step_count - 1)
+
+
 def anchor_chunk_start(clean_latent: torch.Tensor, previous_latent: torch.Tensor,
                        strength: float, lowpass_kernel: int = 0,
                        mode: str = "hold") -> torch.Tensor:

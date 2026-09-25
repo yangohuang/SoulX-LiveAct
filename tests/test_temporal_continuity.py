@@ -2,10 +2,20 @@ import unittest
 
 import torch
 
-from temporal_continuity import anchor_chunk_start
+from temporal_continuity import anchor_chunk_start, should_anchor_step
 
 
 class TemporalContinuityTests(unittest.TestCase):
+    def test_final_step_can_be_skipped_without_changing_default_schedule(self):
+        self.assertEqual([should_anchor_step(i, 3, 0.45) for i in range(3)],
+                         [True, True, True])
+        self.assertEqual([should_anchor_step(i, 3, 0.45, skip_last=True)
+                          for i in range(3)], [True, True, False])
+        self.assertEqual([should_anchor_step(i, 3, 0.0, skip_last=True)
+                          for i in range(3)], [False, False, False])
+        with self.assertRaisesRegex(ValueError, "step"):
+            should_anchor_step(3, 3, 0.45, skip_last=True)
+
     def test_anchor_blends_only_first_two_new_latents(self):
         clean = torch.tensor([[[[0.0]], [[3.0]], [[9.0]]]])
         previous = torch.tensor([[[[7.0]], [[10.0]]]])
