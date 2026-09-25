@@ -1,0 +1,28 @@
+LIVEACT_STARTUP t5_s=0.117
+LIVEACT_STARTUP dit_load_s=0.323
+LIVEACT_STARTUP ready_s=34.682
+----iter_total_num= 23
+Done Block 0: duration 1000.0ms video cost 22077.57 ms
+Done Block 1: duration 1333.3333333333333ms video cost 21429.02 ms
+Done Block 2: duration 1333.3333333333333ms video cost 21354.07 ms
+Done Block 3: duration 1333.3333333333333ms video cost 21367.89 ms
+Done Block 4: duration 1333.3333333333333ms video cost 21394.10 ms
+Done Block 5: duration 1333.3333333333333ms video cost 21358.80 ms
+Done Block 6: duration 1333.3333333333333ms video cost 21346.32 ms
+Done Block 7: duration 1333.3333333333333ms video cost 21379.35 ms
+Done Block 8: duration 1333.3333333333333ms video cost 21332.56 ms
+Done Block 9: duration 1333.3333333333333ms video cost 21353.72 ms
+Done Block 10: duration 1333.3333333333333ms video cost 21389.41 ms
+Done Block 11: duration 1333.3333333333333ms video cost 21391.75 ms
+Done Block 12: duration 1333.3333333333333ms video cost 21396.05 ms
+Done Block 13: duration 1333.3333333333333ms video cost 21386.94 ms
+Done Block 14: duration 1333.3333333333333ms video cost 21417.77 ms
+Done Block 15: duration 1333.3333333333333ms video cost 21369.61 ms
+Done Block 16: duration 1333.3333333333333ms video cost 21371.49 ms
+Done Block 17: duration 1333.3333333333333ms video cost 21406.58 ms
+Done Block 18: duration 1333.3333333333333ms video cost 21382.65 ms
+Done Block 19: duration 1333.3333333333333ms video cost 21400.13 ms
+Done Block 20: duration 1333.3333333333333ms video cost 21487.22 ms
+Done Block 21: duration 1333.3333333333333ms video cost 21534.50 ms
+Done Block 22: duration 1333.3333333333333ms video cost 21456.82 ms
+Video with audio generated successfully: /tmp/liveact-frontier-image2-3step-seed43.mp4

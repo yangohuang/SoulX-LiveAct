@@ -1,0 +1,31 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "docs/benchmarks/artifacts/videos/image2-frontier-2step-seed43-30s.mp4",
+  "source_sha256": "c5f2e5a6bf9fd37b0f515275dc70ffe2966b30228189dc3765e61d573fc44e97",
+  "crop": "/tmp/liveact-frontier-syncnet/pycrop/image2_frontier_two/00000.avi",
+  "crop_sha256": "f12da516848537c82bc4164fe12738c637ef25d13a33f495482b976572d643f6",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "docs/benchmarks/artifacts/2026-09-25-image2-frontier-two-syncnet-distances.npz",
+  "distance_matrix_sha256": "15abf936d3b306e44c557355f96999e51e1d141043c25ceff367f8c1ab0d2bdd",
+  "distance_matrix_shape": [
+    747,
+    31
+  ],
+  "full": {
+    "windows": 747,
+    "best_offset_25fps_frames": -2,
+    "min_distance": 8.468609809875488,
+    "confidence": 6.3175201416015625
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 0.0,
+      "windows": 747,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.468609809875488,
+      "confidence": 6.3175201416015625
+    }
+  ]
+}

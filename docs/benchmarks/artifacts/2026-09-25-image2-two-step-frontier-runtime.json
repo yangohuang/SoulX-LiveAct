@@ -1,0 +1,210 @@
+{
+  "settings": "416x720, 24fps, 30s, FP8 GEMM/KV, CPU block/cache offload, resident_kv_steps=0, seed43; one 4090",
+  "arms": {
+    "3": {
+      "blocks": 23,
+      "later_median_ms": 21388.175,
+      "later_mean_ms": 21395.761363636364,
+      "all_block_sum_s": 492.78432,
+      "block_time_generated_fps": 1.4651440208162467,
+      "sampled_peak_gpu_mib": 9476,
+      "per_block": [
+        {
+          "index": 0,
+          "video_cost_ms": 22077.57
+        },
+        {
+          "index": 1,
+          "video_cost_ms": 21429.02
+        },
+        {
+          "index": 2,
+          "video_cost_ms": 21354.07
+        },
+        {
+          "index": 3,
+          "video_cost_ms": 21367.89
+        },
+        {
+          "index": 4,
+          "video_cost_ms": 21394.1
+        },
+        {
+          "index": 5,
+          "video_cost_ms": 21358.8
+        },
+        {
+          "index": 6,
+          "video_cost_ms": 21346.32
+        },
+        {
+          "index": 7,
+          "video_cost_ms": 21379.35
+        },
+        {
+          "index": 8,
+          "video_cost_ms": 21332.56
+        },
+        {
+          "index": 9,
+          "video_cost_ms": 21353.72
+        },
+        {
+          "index": 10,
+          "video_cost_ms": 21389.41
+        },
+        {
+          "index": 11,
+          "video_cost_ms": 21391.75
+        },
+        {
+          "index": 12,
+          "video_cost_ms": 21396.05
+        },
+        {
+          "index": 13,
+          "video_cost_ms": 21386.94
+        },
+        {
+          "index": 14,
+          "video_cost_ms": 21417.77
+        },
+        {
+          "index": 15,
+          "video_cost_ms": 21369.61
+        },
+        {
+          "index": 16,
+          "video_cost_ms": 21371.49
+        },
+        {
+          "index": 17,
+          "video_cost_ms": 21406.58
+        },
+        {
+          "index": 18,
+          "video_cost_ms": 21382.65
+        },
+        {
+          "index": 19,
+          "video_cost_ms": 21400.13
+        },
+        {
+          "index": 20,
+          "video_cost_ms": 21487.22
+        },
+        {
+          "index": 21,
+          "video_cost_ms": 21534.5
+        },
+        {
+          "index": 22,
+          "video_cost_ms": 21456.82
+        }
+      ]
+    },
+    "2": {
+      "blocks": 23,
+      "later_median_ms": 14894.91,
+      "later_mean_ms": 14902.732727272727,
+      "all_block_sum_s": 344.68777,
+      "block_time_generated_fps": 2.0946493111722533,
+      "sampled_peak_gpu_mib": 9474,
+      "per_block": [
+        {
+          "index": 0,
+          "video_cost_ms": 16827.65
+        },
+        {
+          "index": 1,
+          "video_cost_ms": 15061.19
+        },
+        {
+          "index": 2,
+          "video_cost_ms": 14881.8
+        },
+        {
+          "index": 3,
+          "video_cost_ms": 14861.95
+        },
+        {
+          "index": 4,
+          "video_cost_ms": 14894.44
+        },
+        {
+          "index": 5,
+          "video_cost_ms": 14922.99
+        },
+        {
+          "index": 6,
+          "video_cost_ms": 14896.87
+        },
+        {
+          "index": 7,
+          "video_cost_ms": 14886.17
+        },
+        {
+          "index": 8,
+          "video_cost_ms": 14891.98
+        },
+        {
+          "index": 9,
+          "video_cost_ms": 14892.63
+        },
+        {
+          "index": 10,
+          "video_cost_ms": 14897.33
+        },
+        {
+          "index": 11,
+          "video_cost_ms": 14885.42
+        },
+        {
+          "index": 12,
+          "video_cost_ms": 14887.44
+        },
+        {
+          "index": 13,
+          "video_cost_ms": 14886.98
+        },
+        {
+          "index": 14,
+          "video_cost_ms": 14903.98
+        },
+        {
+          "index": 15,
+          "video_cost_ms": 14897.82
+        },
+        {
+          "index": 16,
+          "video_cost_ms": 14885.02
+        },
+        {
+          "index": 17,
+          "video_cost_ms": 14878.79
+        },
+        {
+          "index": 18,
+          "video_cost_ms": 14930.89
+        },
+        {
+          "index": 19,
+          "video_cost_ms": 14921.52
+        },
+        {
+          "index": 20,
+          "video_cost_ms": 14899.87
+        },
+        {
+          "index": 21,
+          "video_cost_ms": 14895.38
+        },
+        {
+          "index": 22,
+          "video_cost_ms": 14899.66
+        }
+      ]
+    }
+  },
+  "later_block_speedup_three_over_two": 1.4359385185946072
+}
