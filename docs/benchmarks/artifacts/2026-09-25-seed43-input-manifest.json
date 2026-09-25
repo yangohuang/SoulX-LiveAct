@@ -43,5 +43,27 @@
         "duration_s": 30.0
       }
     }
+  },
+  "model_provenance": {
+    "code_base_commit": "2b15c6fbc9dd046033d825c1c2923bc8f72a4c3b",
+    "checkpoint_realpath": "/data/yg/migrated/home/yg/yg/code/github/SoulX/SoulX-LiveAct/checkpoints/LiveAct",
+    "files": {
+      "checkpoint_index": {
+        "path": "checkpoints/LiveAct/diffusion_pytorch_model.safetensors.index.json",
+        "sha256": "9784d457d2d13a690955b034a827b3fbdb598ccd8a6f10c156696cb7a717a4c9"
+      },
+      "checkpoint_config": {
+        "path": "checkpoints/LiveAct/config.json",
+        "sha256": "63810cd77a5acb72a10aed4394565b75a76b229d7838b4996a32022bd4ae602e"
+      },
+      "fp8_cache_manifest": {
+        "path": "/tmp/liveact-fp8-cache/manifest.json",
+        "sha256": "ab0365eda39680d8e3d0e02dc1fd813d69bbb491d049a93884a1f269b90e9d2b"
+      },
+      "prompt_cache_manifest": {
+        "path": "/tmp/liveact-prompt-cache/manifest.json",
+        "sha256": "faf5667e624885ad3768b0c5c62174cf2415bd8ecb2373ccf687a14eae43d764"
+      }
+    }
   }
 }

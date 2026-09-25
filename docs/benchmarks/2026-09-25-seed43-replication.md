@@ -34,6 +34,32 @@ The [baseline video](artifacts/videos/image2-baseline-seed43-30s.mp4), [anchor v
 
 The baseline MP4 container reported 30.125 seconds despite its 30.083-second video stream and 30.000-second audio stream; the anchor container reported 30.084 seconds. The SyncNet pipeline produced 755 versus 754 face-crop frames. A stream-copy trim removed only the extra baseline crop tail frame before the score above; both compared crops have 754 frames and 481,536 audio samples. The original 722-frame videos and motion/face scores are unchanged. The [frame-500 sequence](artifacts/2026-09-25-image2-seed43-window500-507.png) shows the anchor arm's raised hands acquiring a conspicuous dark, smeared appearance around frames 503–505 while the baseline motion is sharper. Separate trajectories prevent a pixel-aligned causal claim, but this is a concrete visual failure and rejects a quality improvement claim. Identity 2 now shows the same lower-MAE/lower-motion/worse-lip pattern at both seeds.
 
-## Remaining pair
+## Identity 3: complete
 
-Identity 3 at seed 43 is running sequentially on the same RTX 4090. It will be added only after both arms pass video, motion, face and lip-sync checks; partial or failed runs will be disclosed rather than silently dropped. The [input manifest](artifacts/2026-09-25-seed43-input-manifest.json) fixes reference and audio hashes for all three identities.
+The [baseline video](artifacts/videos/image3-baseline-seed43-30s.mp4), [anchor video](artifacts/videos/image3-anchor045-seed43-30s.mp4) and [side-by-side review](artifacts/videos/image3-baseline-left-anchor045-right-seed43-30s.mp4) have 722 frames each. The [motion JSON](artifacts/2026-09-25-image3-seed43-motion-pair.json), [face-reference JSON](artifacts/2026-09-25-face-identity-image3-seed43.json), [SyncNet JSON](artifacts/2026-09-25-image3-seed43-syncnet.json), [seven-timepoint contact sheet](artifacts/2026-09-25-image3-seed43-long-horizon-contact.png) and [frames 116–123](artifacts/2026-09-25-image3-seed43-window116-123.png) preserve the pair.
+
+| Metric | Baseline | Anchor 0.45 | Paired reading |
+|---|---:|---:|---|
+| Mean eight-transition boundary peak, grayscale MAE | 5.699 | 4.025 | −29.4% |
+| Mean eight-transition change sum | 33.357 | 23.488 | −29.6% |
+| Largest baseline window, index 116 | 7.257 at offset 1 | 3.774 at offset 4 | Different trajectory and later maximum; not a quality verdict |
+| Windows with peak after seam | 13/22 | 16/22 | More delayed local maxima |
+| Mean reference-face cosine, 31/31 single-face detections | 0.745 | 0.719 | No identity-proxy gain; pose-sensitive |
+| SyncNet minimum distance, matched 754-frame crops | 7.886 | 7.971 | Higher is unfavorable |
+| SyncNet relative confidence, matched 754-frame crops | 5.755 | 5.500 | Lower is unfavorable; best offset stays −1 |
+
+The two SyncNet face crops both have 754 video frames and 481,536 audio samples; no endpoint correction was needed. The worst-window images show changed mouth and hand trajectories between separately sampled runs. The smaller grayscale peak does not establish physically correct strumming or better lip timing.
+
+## Six paired cases: decision
+
+The [input manifest](artifacts/2026-09-25-seed43-input-manifest.json) fixes reference, audio, model-index and cache-manifest hashes; the [six-pair JSON](artifacts/2026-09-25-six-pair-summary.json) and [trade-off chart](artifacts/2026-09-25-six-pair-tradeoff.png) combine the seed-42 pilot and seed-43 replication without treating windows as independent samples.
+
+| Identity | Seed 42: peak / motion-sum change | Seed 43: peak / motion-sum change | SyncNet confidence change, seeds 42 / 43 |
+|---|---:|---:|---:|
+| 1 | −34.1% / −29.3% | −24.6% / −29.1% | −0.480 / −0.233 |
+| 2 | −25.2% / −28.6% | −28.7% / −29.1% | −0.271 / −0.287 |
+| 3 | −19.6% / −25.5% | −29.4% / −29.6% | −0.201 / −0.255 |
+
+All six cases show lower boundary peaks, lower local image change, lower SyncNet relative confidence and lower mean reference-face cosine with fixed 0.45 anchoring. All six also have more windows whose largest change occurs after the immediate seam. These consistent *directions* strengthen the finding that the anchor changes the motion/lip trade-off; they are still only three public identities and two seeds, with correlated windows and pose-sensitive face embeddings. They do not estimate population-level benefits or hour-scale drift. The visible hand smearing in identity 2 at both seeds independently fails the visual quality gate. **Decision: reject fixed anchoring as a general long-video stability method**, despite its attractive single-metric reductions. The reusable output is the six-pair evaluation contract and falsification case, not a claimed LiveAct repair.
+
+The next [velocity-aware inference hypothesis](../superpowers/specs/2026-09-25-velocity-aware-boundary-design.md) is evaluated separately on identity 2, seed 43; it is not part of these predeclared six fixed-anchor pairs.
