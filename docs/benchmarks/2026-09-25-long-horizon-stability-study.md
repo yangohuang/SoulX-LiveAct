@@ -36,7 +36,7 @@ The previous [same-pipeline SyncNet evaluation](2026-09-24-liveact-motion-contin
 
 ### Face-reference consistency is a separate, noisy proxy
 
-[`face_identity_stability.py`](../../face_identity_stability.py) uses a local InsightFace buffalo_l detector and recognition model on CPU, sampling frame indices 0, 24, …, 720 (31 samples). Its weights are **not** included in this repository, and no biometric embeddings are saved. The [31-point JSON](artifacts/2026-09-25-face-identity-image1.json) records SHA-256 hashes for the reference, both model files and source MP4s; the [timeline](artifacts/2026-09-25-face-identity-image1.png) plots cosine similarity to the supplied reference image. Frames with zero or multiple detected faces are excluded and counted, and an early/late coverage below 90% blocks interpretation. Here every arm has exactly one detected face in all 31 samples, with minimum detection score 0.777, so the first-generated-face anchor is frame 0. The detector sometimes places the left edge of the face box outside the image, which is another reason to treat this as a proxy.
+[`face_identity_stability.py`](../../face_identity_stability.py) uses a local InsightFace buffalo_l detector and recognition model on CPU, sampling frame indices 0, 24, …, 720 (31 samples). Its weights are **not** included in this repository, and no biometric embeddings are saved. The publisher's [model-zoo terms](https://github.com/deepinsight/insightface/blob/master/python-package/docs/model_zoo.md) permit these pretrained weights for non-commercial research. The [31-point JSON](artifacts/2026-09-25-face-identity-image1.json) records SHA-256 hashes for the reference, both model files and source MP4s; the [timeline](artifacts/2026-09-25-face-identity-image1.png) plots cosine similarity to the supplied reference image. Frames with zero or multiple detected faces are excluded and counted, and an early/late coverage below 90% blocks interpretation. Here every arm has exactly one detected face in all 31 samples, with minimum detection score 0.777, so the first-generated-face anchor is frame 0. The detector sometimes places the left edge of the face box outside the image, which is another reason to treat this as a proxy.
 
 | Arm | Mean reference cosine | 10th percentile | First-third mean | Last-third mean | Final sample |
 |---|---:|---:|---:|---:|---:|
@@ -45,6 +45,8 @@ The previous [same-pipeline SyncNet evaluation](2026-09-24-liveact-motion-contin
 | Anchor 0.45 | 0.724 | 0.624 | 0.763 | 0.691 | 0.781 |
 
 All three traces have large second-to-second excursions and rebound near the final sample. The lower last-third means do **not** demonstrate permanent identity drift, and no anchor has a clear identity advantage on one identity/seed. Expression, pose and crop changes can affect face embeddings. This is now an instrumented identity-consistency pilot, not a validated long-video identity benchmark.
+
+The [0/5/10/15/20/25/30-second contact sheet](artifacts/2026-09-25-image1-long-horizon-contact.png) provides a sparse visual identity check for baseline versus 0.45. The same person and setting remain recognizable at the sampled times; this cannot establish that intervening gestures or lip movements are temporally correct.
 
 ```bash
 OMP_NUM_THREADS=1 /home/yg/miniforge3/envs/latentsync/bin/python face_identity_stability.py \
@@ -64,5 +66,23 @@ It establishes a reproducible way to reject a misleading one-number claim: tempo
 ## Cross-identity extension protocol, fixed before reading new outputs
 
 The first extension runs images/audio 2 and 3, each trimmed to 30 seconds, with seed 42 and two arms (baseline versus fixed anchor 0.45). The same 416×720, 24-FPS, three-step FP8/one-resident-KV setup and the evaluator above are fixed. The primary descriptive endpoint is mean eight-transition peak at all 22 boundaries; secondary endpoints are maximum peak, eight-transition summed motion and early/middle/late values. A lower peak in both new identities would support a reproducible *image-change* effect, but would still not establish better motion, identity, lip sync or generality across seeds. Each generated MP4 must have 722 frames and decode successfully; report failures and do not silently omit a run. The full six-pair/two-seed gate below remains necessary for a quality claim.
+
+The first four-run batch was interrupted by the execution session after completing image-2 baseline and part of image-2 anchor; the partial anchor had no MP4 and was restarted as a single run. A later image-3 baseline invocation failed immediately because its JSON request had not yet been written; the request was created and the run restarted. Neither incomplete invocation is counted as a video result.
+
+### Image 2, seed 42: first completed extension pair
+
+Both [baseline](artifacts/videos/image2-baseline-30s.mp4) and [anchor 0.45](artifacts/videos/image2-anchor045-30s.mp4) have 722 frames and match the fixed format. The [motion JSON](artifacts/2026-09-25-image2-motion-pair.json), [face-reference JSON](artifacts/2026-09-25-face-identity-image2.json), [SyncNet record](artifacts/2026-09-25-image2-syncnet.json) and [seven-timepoint contact sheet](artifacts/2026-09-25-image2-long-horizon-contact.png) preserve the comparison.
+
+| Measure | Baseline | Anchor 0.45 | Interpretation |
+|---|---:|---:|---|
+| Mean eight-transition peak | 5.210 | 3.897 | Lower image-change peak, −25.2% |
+| Mean eight-transition motion sum | 29.119 | 20.804 | Also 28.6% less local image change; natural action not established |
+| Mean face-reference cosine, 31/31 detected | 0.714 | 0.696 | No identity-proxy gain; pose/crop confounding remains |
+| SyncNet minimum distance | 8.358 | 8.485 | Higher is unfavorable |
+| SyncNet relative confidence | 6.668 | 6.397 | Lower is unfavorable |
+
+The SyncNet pipeline converted each clip to 25 FPS, found one 754-frame face track, used the same S3FD crop procedure and model, and returned a best offset of −2 converted frames for both. The distance/confidence shift is **relative** evidence, not proof of an absolute delay. The image-2 result repeats the image-1 pattern: a smaller motion-change proxy with a less favorable lip-sync proxy. Image 3 is still running; no cross-person conclusion is drawn yet.
+
+The image-2 videos were generated with the command in the prior [rollout-bridge reproduction record](2026-09-24-liveact-rollout-bridge.md), replacing the 8-second audio trim with 30 seconds, omitting latent capture, and setting `--motion_anchor_strength` to `0` or `0.45`. Their exact MP4 hashes are in the motion and SyncNet JSONs. To reproduce the lip scores, run the local `github/syncnet_python/run_pipeline.py` for each MP4 with distinct `--reference` names and a shared `--data_dir`, then `run_syncnet.py --data_dir <same> --reference <name> --initial_model data/syncnet_v2.model`. The model hash is recorded in the SyncNet JSON; the model weights and intermediate face crops are not redistributed.
 
 The next replication gate is at least three identities × two seeds × 30 seconds, with fixed audio, prompt, model and runtime settings per identity. Each arm needs the same source-specific 22-boundary analysis, manual review of its worst three windows, a validated face-embedding drift curve, and comparable SyncNet extraction. This separation follows the spirit of [VBench's temporal-quality dimensions](https://openaccess.thecvf.com/content/CVPR2024/papers/Huang_VBench_Comprehensive_Benchmark_Suite_for_Video_Generative_Models_CVPR_2024_paper.pdf), especially subject consistency, motion smoothness and dynamic degree; the present grayscale metric is not a VBench score. Only then should a new inference method be compared with the baseline. A separate model-side direction would study bounded history or reference refresh under the same evaluation protocol; generated-history training should wait for image/audio-aligned conditioning and a valid distributional target. A negative or mixed result remains a useful research outcome and need not become an upstream PR.
