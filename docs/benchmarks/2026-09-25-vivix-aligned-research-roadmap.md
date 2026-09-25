@@ -1,0 +1,16 @@
+# 4090 long-horizon streaming-video research roadmap
+
+## Thesis
+
+Use SoulX-LiveAct as a controlled, public testbed for the research question: **how should a causal audio-driven video generator trade temporal continuity, expressive movement, identity/lip fidelity and inference cost over long streams?** A visible jump is one diagnostic case, not the project's success criterion. A research result may be a failed method with a convincing causal explanation and reproducible evidence. It does not require an upstream SoulX PR.
+
+The ordering follows the Vivix JD's emphasis on long-form stability, error accumulation, efficient diffusion sampling and independent experimentation. [Vivix-W1](https://vivix.ai/tech-report-vivix-w1) names streaming generation, low-step acceleration, long-horizon consistency and multimodal reference stability as targets; its proprietary implementation is not available here.
+
+| Milestone | Feasible 4090 work | Exit evidence | What it does not prove |
+|---|---|---|---|
+| 1. Multi-objective measurement | Finish three identities × two seeds × 30 seconds for baseline and one intervention. Track chunk-window peaks and offsets, motion amount, worst-window visual reviews, SyncNet, identity drift and chunk time separately. | Frozen input manifest, video/JSON/timeline artifacts, per-identity table, detector coverage and failure cases. | One metric cannot stand in for natural motion or audiovisual quality. |
+| 2. Error-source ablation | Change one inference factor at a time: history representation/precision, memory availability, and two- versus three-step sampling. Preserve audio, prompt, seed and output resolution within each pair. | Which changes affect first predicted clean latent, decoded seam, or only latency; compute-quality frontier. | A correlation at a boundary is not proof of the model's training-time failure mechanism. |
+| 3. One algorithmic candidate | If the measured issue is sparse, test an anomaly-gated boundary correction: use the first clean-latent discrepancy to apply an otherwise disabled correction only on suspect chunks. Compare with baseline and fixed anchor at equal denoising-step count. | Lower severe-event rate *and* no new delayed peak, motion suppression, identity or SyncNet loss on held-out identities. If not met, report rejection. | No claim of SRF, physics-aware motion or real-time 24 FPS. |
+| 4. Training hypothesis only after a valid target exists | Use a smaller reference/audio-conditioned generator or distributional teacher to test generated-history training. Measure one-card memory before training. | Same-seed, held-out-identity long-rollout improvement with visual and lip-sync review. | Text-only Wan flow MSE is insufficient to validate LiveAct forcing. |
+
+The first two milestones can yield a credible Vivix interview story without improving the model: an explicit long-video failure taxonomy, controlled ablations, a speed/quality budget, and honest negative findings. Milestone 3 would be the stronger algorithmic contribution if it passes. The personal fork can host code and artifacts throughout; an official PR is a separate decision after user review and after an actual reusable contribution passes its quality gate.
