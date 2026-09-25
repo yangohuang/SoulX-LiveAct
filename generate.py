@@ -139,6 +139,10 @@ def _parse_args():
         default=3,
         help="Denoising steps; 3 preserves the original schedule, 2 is an experimental quality/speed tradeoff.")
     parser.add_argument(
+        "--audio_first_step",
+        action="store_true",
+        help="Experiment: condition both two-step DiT forwards on audio; requires --denoising_steps 2.")
+    parser.add_argument(
         "--fp8_cache_dir",
         type=str,
         default=None,
@@ -278,7 +282,8 @@ def generate(args):
     fps = args.fps
     vae_stride = (4, 8, 8)
     patch_size = (1, 2, 2)
-    timestep_values, skip_audio_by_step = denoising_schedule(args.denoising_steps)
+    timestep_values, skip_audio_by_step = denoising_schedule(
+        args.denoising_steps, audio_first_step=args.audio_first_step)
     timesteps = [torch.tensor([_]).to(device, dtype=torch.float32) for _ in timestep_values]
     blksz_lst = [6, 8]
     frame_len = (height // (patch_size[1] * vae_stride[1])) * (width // (patch_size[2] * vae_stride[2]))

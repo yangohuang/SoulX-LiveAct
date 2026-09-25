@@ -38,6 +38,8 @@ def main() -> None:
     parser.add_argument("--cond-audio", default="/tmp/liveact-local-5s.wav")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--denoising-steps", type=int, choices=(2, 3), default=3)
+    parser.add_argument("--audio-first-step", action="store_true",
+                        help="Condition both two-step DiT forwards on audio.")
     parser.add_argument("--resident-kv-steps", type=int, choices=(0, 1), default=1)
     parser.add_argument("--disable-cudnn-benchmark", action="store_true",
                         help="Keep cuDNN's algorithm choice stable across independent runs.")
@@ -75,6 +77,8 @@ def main() -> None:
         cmd.append("--pin_block_memory")
     if args.disable_cudnn_benchmark:
         cmd.append("--disable_cudnn_benchmark")
+    if args.audio_first_step:
+        cmd.append("--audio_first_step")
     env = os.environ.copy()
     env["USE_CHANNELS_LAST_3D"] = "1"
     env["CUDA_VISIBLE_DEVICES"] = "0"

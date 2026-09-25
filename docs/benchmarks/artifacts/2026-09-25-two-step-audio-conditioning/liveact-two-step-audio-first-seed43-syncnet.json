@@ -1,0 +1,31 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "/tmp/liveact-two-step-audio-first-seed43-30s.mp4",
+  "source_sha256": "3e40dc806104dce85d4af62d3e9464d50c0b984bd3bbcc3b8d6cc05f349cfd95",
+  "crop": "/tmp/liveact-two-step-audio-first-syncnet/pycrop/image2_audiofirst_seed43/00000.avi",
+  "crop_sha256": "7e8d08fd7ad03b862d03eb25194da9604ea92bc26d39929ae8dcc481ee5030c6",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "/tmp/liveact-two-step-audio-first-seed43-syncnet-distances.npz",
+  "distance_matrix_sha256": "4d0393445c4804d3507a5391e7a39b87f995ad09586e47f9a79210080bd4f154",
+  "distance_matrix_shape": [
+    747,
+    31
+  ],
+  "full": {
+    "windows": 747,
+    "best_offset_25fps_frames": -2,
+    "min_distance": 8.107024192810059,
+    "confidence": 6.868309020996094
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 0.0,
+      "windows": 747,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.107024192810059,
+      "confidence": 6.868309020996094
+    }
+  ]
+}
