@@ -1,0 +1,5 @@
+085d5f328c25cf66e8794dc19d36d741f086e03a0b57305c85472cd4f0ba0939  pose-frame480.png
+53562cc15021844bb1bd1104a86f49ddf10987ec63d62d73a15257cac913f7d2  region-overlay.png
+a7cb5032eb9d8190446b48ced7d3e1021c41bc32d9bb7e532d2abf7a0992c865  six-video-pose.json.gz
+3e54ee308ae2ddaa73212d27ffbcd0f100863a7a70dcbda8b8f2962aab99fc4d  six-video-spatial-motion.json.gz
+56d33cafa30147d2378acb8abf9038bbf96a517ee5cce62d5565658984b91060  spatial-boundary-outside-ratios.png
