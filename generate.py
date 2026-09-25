@@ -541,6 +541,12 @@ def generate(args):
                     dt = dt / 1000
                     # latent = latent + (-noise_pred) * dt[0]
                     x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
+                    if (probe_dir is not None and _ == args.boundary_probe_block and
+                            i == len(timesteps) - 2):
+                        snapshot = capture_final_context(pre_latent, x0_pred)
+                        snapshot.update({"block_index": _, "step_index": i,
+                                         "first_output_frame": block_start_frame(_)})
+                        torch.save(snapshot, probe_dir / f"block-{_}-pre-anchor-final.pt")
                     if signal_steps is not None and i in (0, len(timesteps) - 2):
                         signal_steps.append({"step_index": i, "timestep": float(timestep_values[i]),
                                              "metrics": pre_output_boundary_metrics(pre_latent, x0_pred)})

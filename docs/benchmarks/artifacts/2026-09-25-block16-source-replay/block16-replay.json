@@ -1,0 +1,110 @@
+{
+  "block_index": 16,
+  "output_frames": [
+    501,
+    508
+  ],
+  "same_arm_validation_passed": true,
+  "correction": {
+    "first_two_rmse": 0.2525991201400757,
+    "first_two_mae": 0.14010116457939148,
+    "other_latents_equal": true
+  },
+  "videos": {
+    "baseline": {
+      "source": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/videos/image2-boundary-signal-seed43-30s.mp4",
+      "sha256": "aee2cdc9df1ec732c99be5e2b845c48f98d1aa484b1c16ac3c9d5404b08563b7"
+    },
+    "velocity": {
+      "source": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/videos/image2-source-probe-velocity-seed43-30s.mp4",
+      "sha256": "c0ef6aea150fe60069e9a17ef1b9ad8c53d7e7b17f8cf0799be44f3b765afc72"
+    }
+  },
+  "snapshots": {
+    "baseline": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/latent-probes/image2-baseline-seed43-block16-final.pt",
+    "velocity": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/latent-probes/image2-velocity-seed43-block16-final.pt",
+    "velocity_pre_anchor": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/latent-probes/image2-velocity-seed43-block16-pre-anchor-final.pt"
+  },
+  "results": {
+    "baseline": {
+      "history_arm": "baseline",
+      "current_arm": "baseline",
+      "decode_seconds": 3.617459591012448,
+      "local_decoder_changes": {
+        "local_seam_mae": 5.541877746582031,
+        "first_three_changes": [
+          5.541877746582031,
+          11.358272552490234,
+          15.463357925415039
+        ],
+        "first_eight_peak": 15.506928443908691,
+        "first_eight_sum": 85.38263130187988
+      },
+      "source_replay_mean_rgb_mae": 2.568685313167735,
+      "source_replay_max_rgb_difference": 92
+    },
+    "velocity": {
+      "history_arm": "velocity",
+      "current_arm": "velocity",
+      "decode_seconds": 2.260981749976054,
+      "local_decoder_changes": {
+        "local_seam_mae": 7.8399763107299805,
+        "first_three_changes": [
+          7.8399763107299805,
+          5.151567459106445,
+          5.278810501098633
+        ],
+        "first_eight_peak": 11.679461479187012,
+        "first_eight_sum": 56.648128032684326
+      },
+      "source_replay_mean_rgb_mae": 2.6551378038194446,
+      "source_replay_max_rgb_difference": 89
+    },
+    "velocity_pre_anchor": {
+      "history_arm": "velocity",
+      "current_arm": "velocity_pre_anchor",
+      "decode_seconds": 2.2639853240107186,
+      "local_decoder_changes": {
+        "local_seam_mae": 5.45607328414917,
+        "first_three_changes": [
+          5.45607328414917,
+          5.537631988525391,
+          7.166311740875244
+        ],
+        "first_eight_peak": 11.531539916992188,
+        "first_eight_sum": 62.13673782348633
+      }
+    },
+    "baseline_history_velocity_current": {
+      "history_arm": "baseline",
+      "current_arm": "velocity",
+      "decode_seconds": 2.263981132011395,
+      "local_decoder_changes": {
+        "local_seam_mae": 8.174721717834473,
+        "first_three_changes": [
+          8.174721717834473,
+          5.239225387573242,
+          5.298557758331299
+        ],
+        "first_eight_peak": 11.784238815307617,
+        "first_eight_sum": 57.2172589302063
+      }
+    },
+    "velocity_history_baseline_current": {
+      "history_arm": "velocity",
+      "current_arm": "baseline",
+      "decode_seconds": 2.263756303000264,
+      "local_decoder_changes": {
+        "local_seam_mae": 6.191753387451172,
+        "first_three_changes": [
+          6.191753387451172,
+          11.66773509979248,
+          15.599964141845703
+        ],
+        "first_eight_peak": 15.599964141845703,
+        "first_eight_sum": 86.55771064758301
+      }
+    }
+  },
+  "contact_sheet": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/2026-09-25-block16-source-replay/block16-seven-row-replay.png"
+}
