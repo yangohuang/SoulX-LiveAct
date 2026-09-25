@@ -3,10 +3,43 @@ import unittest
 import torch
 
 from boundary_probe import (block_start_frame, capture_latent_pair,
-                            capture_final_context, latent_transition_metrics)
+                            capture_final_context, latent_transition_metrics,
+                            pre_output_boundary_metrics, write_boundary_signal)
 
 
 class BoundaryProbeTests(unittest.TestCase):
+    def test_pre_output_metric_distinguishes_continuing_motion(self):
+        previous = torch.tensor([[[[1.]], [[3.]]]], dtype=torch.bfloat16)
+        predicted = torch.tensor([[[[5.]], [[8.]]]], dtype=torch.bfloat16)
+        metrics = pre_output_boundary_metrics(previous, predicted)
+        self.assertEqual({k: v.item() for k, v in metrics.items()},
+                         {"gap_mae": 2.0, "previous_speed_mae": 2.0,
+                          "velocity_residual_mae": 0.0})
+        self.assertEqual({v.device.type for v in metrics.values()}, {"cpu"})
+        with self.assertRaisesRegex(ValueError, "shape"):
+            pre_output_boundary_metrics(previous, torch.zeros(2, 2, 1, 1))
+
+    def test_signal_writer_serializes_first_and_final_steps(self):
+        import json
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "request-0.json"
+            blocks = [{"block_index": 1, "steps": [
+                {"step_index": 0, "timestep": 1000.0,
+                 "metrics": {"gap_mae": torch.tensor(2.0)}},
+                {"step_index": 2, "timestep": 350.0,
+                 "metrics": {"gap_mae": torch.tensor(1.5)}}]}]
+            write_boundary_signal(path, blocks, seed=43, image_path="example.png",
+                                  audio_path="example.wav", output_path="result.mp4",
+                                  settings={"denoising_steps": 3})
+            data = json.loads(path.read_text())
+            self.assertEqual(data["blocks"][0]["first_output_frame"], 21)
+            self.assertEqual(data["blocks"][0]["boundary_transition"], [20, 21])
+            self.assertEqual(data["blocks"][0]["steps"][1]["metrics"]["gap_mae"], 1.5)
+            self.assertEqual(data["seed"], 43)
+            self.assertEqual(data["settings"], {"denoising_steps": 3})
+
     def test_frame_mapping_after_initial_six_latent_block(self):
         self.assertEqual(block_start_frame(0), 0)
         self.assertEqual(block_start_frame(1), 21)

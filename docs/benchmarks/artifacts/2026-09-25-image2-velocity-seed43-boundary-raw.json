@@ -1,0 +1,635 @@
+{
+  "schema_version": 1,
+  "seed": 43,
+  "image_path": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/examples/image/2.png",
+  "audio_path": "/tmp/liveact-long-horizon-audio2-30s.wav",
+  "output_path": "/tmp/liveact-boundary-signal-image2-velocity-seed43.mp4",
+  "settings": {
+    "size": "416*720",
+    "fps": 24,
+    "denoising_steps": 3,
+    "motion_anchor_strength": 0.45,
+    "fp8_gemm": true,
+    "fp8_kv_cache": true,
+    "block_offload": true,
+    "resident_kv_steps": 1
+  },
+  "blocks": [
+    {
+      "block_index": 1,
+      "first_output_frame": 21,
+      "boundary_transition": [
+        20,
+        21
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3878004252910614,
+            "previous_speed_mae": 0.24524672329425812,
+            "velocity_residual_mae": 0.546249508857727
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1794302612543106,
+            "previous_speed_mae": 0.24524672329425812,
+            "velocity_residual_mae": 0.33329230546951294
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 2,
+      "first_output_frame": 53,
+      "boundary_transition": [
+        52,
+        53
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.2604297995567322,
+            "previous_speed_mae": 0.12037649750709534,
+            "velocity_residual_mae": 0.3164994418621063
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.14551299810409546,
+            "previous_speed_mae": 0.12037649750709534,
+            "velocity_residual_mae": 0.20776145160198212
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 3,
+      "first_output_frame": 85,
+      "boundary_transition": [
+        84,
+        85
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.35536786913871765,
+            "previous_speed_mae": 0.1470402032136917,
+            "velocity_residual_mae": 0.42795896530151367
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1344488114118576,
+            "previous_speed_mae": 0.1470402032136917,
+            "velocity_residual_mae": 0.2245676964521408
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 4,
+      "first_output_frame": 117,
+      "boundary_transition": [
+        116,
+        117
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.33194899559020996,
+            "previous_speed_mae": 0.1778976023197174,
+            "velocity_residual_mae": 0.4275244474411011
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.17667807638645172,
+            "previous_speed_mae": 0.1778976023197174,
+            "velocity_residual_mae": 0.2726856768131256
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 5,
+      "first_output_frame": 149,
+      "boundary_transition": [
+        148,
+        149
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.2878768742084503,
+            "previous_speed_mae": 0.1825641393661499,
+            "velocity_residual_mae": 0.40164196491241455
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.18548841774463654,
+            "previous_speed_mae": 0.1825641393661499,
+            "velocity_residual_mae": 0.2900248169898987
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 6,
+      "first_output_frame": 181,
+      "boundary_transition": [
+        180,
+        181
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3146955072879791,
+            "previous_speed_mae": 0.1502102017402649,
+            "velocity_residual_mae": 0.37453603744506836
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1454305797815323,
+            "previous_speed_mae": 0.1502102017402649,
+            "velocity_residual_mae": 0.21544484794139862
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 7,
+      "first_output_frame": 213,
+      "boundary_transition": [
+        212,
+        213
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3655722737312317,
+            "previous_speed_mae": 0.2652067244052887,
+            "velocity_residual_mae": 0.5353303551673889
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.2867918908596039,
+            "previous_speed_mae": 0.2652067244052887,
+            "velocity_residual_mae": 0.44413766264915466
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 8,
+      "first_output_frame": 245,
+      "boundary_transition": [
+        244,
+        245
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3546393811702728,
+            "previous_speed_mae": 0.2650642991065979,
+            "velocity_residual_mae": 0.5023436546325684
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.23794738948345184,
+            "previous_speed_mae": 0.2650642991065979,
+            "velocity_residual_mae": 0.38733431696891785
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 9,
+      "first_output_frame": 277,
+      "boundary_transition": [
+        276,
+        277
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3902115523815155,
+            "previous_speed_mae": 0.2155262976884842,
+            "velocity_residual_mae": 0.5230652689933777
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1739506721496582,
+            "previous_speed_mae": 0.2155262976884842,
+            "velocity_residual_mae": 0.2958821654319763
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 10,
+      "first_output_frame": 309,
+      "boundary_transition": [
+        308,
+        309
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.31806880235671997,
+            "previous_speed_mae": 0.13823002576828003,
+            "velocity_residual_mae": 0.3781246244907379
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.21475788950920105,
+            "previous_speed_mae": 0.13823002576828003,
+            "velocity_residual_mae": 0.27830731868743896
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 11,
+      "first_output_frame": 341,
+      "boundary_transition": [
+        340,
+        341
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.31020185351371765,
+            "previous_speed_mae": 0.18607859313488007,
+            "velocity_residual_mae": 0.41339394450187683
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.18976722657680511,
+            "previous_speed_mae": 0.18607859313488007,
+            "velocity_residual_mae": 0.28675374388694763
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 12,
+      "first_output_frame": 373,
+      "boundary_transition": [
+        372,
+        373
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.27211377024650574,
+            "previous_speed_mae": 0.19655103981494904,
+            "velocity_residual_mae": 0.3878001570701599
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1798846423625946,
+            "previous_speed_mae": 0.19655103981494904,
+            "velocity_residual_mae": 0.28580018877983093
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 13,
+      "first_output_frame": 405,
+      "boundary_transition": [
+        404,
+        405
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.28532788157463074,
+            "previous_speed_mae": 0.1609840840101242,
+            "velocity_residual_mae": 0.365939199924469
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.16055910289287567,
+            "previous_speed_mae": 0.1609840840101242,
+            "velocity_residual_mae": 0.2454642504453659
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 14,
+      "first_output_frame": 437,
+      "boundary_transition": [
+        436,
+        437
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.2766515910625458,
+            "previous_speed_mae": 0.1739407628774643,
+            "velocity_residual_mae": 0.3822559416294098
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.14079667627811432,
+            "previous_speed_mae": 0.1739407628774643,
+            "velocity_residual_mae": 0.251438707113266
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 15,
+      "first_output_frame": 469,
+      "boundary_transition": [
+        468,
+        469
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.29969507455825806,
+            "previous_speed_mae": 0.26059451699256897,
+            "velocity_residual_mae": 0.46882158517837524
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.20279236137866974,
+            "previous_speed_mae": 0.26059451699256897,
+            "velocity_residual_mae": 0.3492647409439087
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 16,
+      "first_output_frame": 501,
+      "boundary_transition": [
+        500,
+        501
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3753783404827118,
+            "previous_speed_mae": 0.2603996992111206,
+            "velocity_residual_mae": 0.5416930317878723
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.22609111666679382,
+            "previous_speed_mae": 0.2603996992111206,
+            "velocity_residual_mae": 0.3844769597053528
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 17,
+      "first_output_frame": 533,
+      "boundary_transition": [
+        532,
+        533
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.292448490858078,
+            "previous_speed_mae": 0.21038950979709625,
+            "velocity_residual_mae": 0.4322466254234314
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.18017062544822693,
+            "previous_speed_mae": 0.21038950979709625,
+            "velocity_residual_mae": 0.3165695369243622
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 18,
+      "first_output_frame": 565,
+      "boundary_transition": [
+        564,
+        565
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.31286388635635376,
+            "previous_speed_mae": 0.2737005650997162,
+            "velocity_residual_mae": 0.4599604308605194
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.21941225230693817,
+            "previous_speed_mae": 0.2737005650997162,
+            "velocity_residual_mae": 0.3841792345046997
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 19,
+      "first_output_frame": 597,
+      "boundary_transition": [
+        596,
+        597
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3307141065597534,
+            "previous_speed_mae": 0.18643048405647278,
+            "velocity_residual_mae": 0.4378482699394226
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.20961914956569672,
+            "previous_speed_mae": 0.18643048405647278,
+            "velocity_residual_mae": 0.3152199387550354
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 20,
+      "first_output_frame": 629,
+      "boundary_transition": [
+        628,
+        629
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.26613301038742065,
+            "previous_speed_mae": 0.2011609971523285,
+            "velocity_residual_mae": 0.38847219944000244
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.17304638028144836,
+            "previous_speed_mae": 0.2011609971523285,
+            "velocity_residual_mae": 0.2843632996082306
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 21,
+      "first_output_frame": 661,
+      "boundary_transition": [
+        660,
+        661
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.2925724387168884,
+            "previous_speed_mae": 0.17480523884296417,
+            "velocity_residual_mae": 0.38817569613456726
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.1888626515865326,
+            "previous_speed_mae": 0.17480523884296417,
+            "velocity_residual_mae": 0.2943066358566284
+          }
+        }
+      ]
+    },
+    {
+      "block_index": 22,
+      "first_output_frame": 693,
+      "boundary_transition": [
+        692,
+        693
+      ],
+      "steps": [
+        {
+          "step_index": 0,
+          "timestep": 1000.0,
+          "metrics": {
+            "gap_mae": 0.3335229158401489,
+            "previous_speed_mae": 0.2605583667755127,
+            "velocity_residual_mae": 0.48127952218055725
+          }
+        },
+        {
+          "step_index": 2,
+          "timestep": 833.33333333,
+          "metrics": {
+            "gap_mae": 0.19763197004795074,
+            "previous_speed_mae": 0.2605583667755127,
+            "velocity_residual_mae": 0.3328736424446106
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 """Small, default-off diagnostics for LiveAct's generated block boundaries."""
 
+import json
+import math
+
 import torch
 
 
@@ -44,3 +47,39 @@ def latent_transition_metrics(previous: torch.Tensor, current: torch.Tensor) -> 
     return {"previous_within_rmse": rmse(previous[:, -2], previous[:, -1]),
             "boundary_rmse": rmse(previous[:, -1], current[:, 0]),
             "current_within_rmse": rmse(current[:, 0], current[:, 1])}
+
+
+def pre_output_boundary_metrics(previous: torch.Tensor, predicted: torch.Tensor) -> dict:
+    """Return GPU-side scalar continuity metrics before optional chunk anchoring."""
+    if (previous.ndim != 4 or predicted.ndim != 4 or previous.shape[1] < 2 or
+            predicted.shape[1] < 1 or previous.shape[0] != predicted.shape[0] or
+            previous.shape[2:] != predicted.shape[2:]):
+        raise ValueError("chunk latents must have matching channel and spatial shape")
+    previous_speed = previous[:, -1].float() - previous[:, -2].float()
+    gap = predicted[:, 0].float() - previous[:, -1].float()
+    return {"gap_mae": gap.abs().mean().detach(),
+            "previous_speed_mae": previous_speed.abs().mean().detach(),
+            "velocity_residual_mae": (gap - previous_speed).abs().mean().detach()}
+
+
+def write_boundary_signal(path, blocks: list, *, seed: int, image_path: str,
+                          audio_path: str, output_path: str, settings: dict) -> None:
+    """Transfer recorded scalar tensors and write one request's JSON evidence."""
+    serialized = []
+    for block in blocks:
+        start = block_start_frame(block["block_index"])
+        steps = []
+        for step in block["steps"]:
+            metrics = {name: float(value.item()) for name, value in step["metrics"].items()}
+            if not all(math.isfinite(value) for value in metrics.values()):
+                raise ValueError("boundary signal contains a nonfinite metric")
+            steps.append({"step_index": step["step_index"], "timestep": step["timestep"],
+                          "metrics": metrics})
+        serialized.append({"block_index": block["block_index"],
+                           "first_output_frame": start,
+                           "boundary_transition": [start - 1, start],
+                           "steps": steps})
+    path.write_text(json.dumps({"schema_version": 1, "seed": seed,
+                                "image_path": image_path, "audio_path": audio_path,
+                                "output_path": output_path, "settings": settings,
+                                "blocks": serialized}, indent=2) + "\n")

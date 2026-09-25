@@ -35,7 +35,8 @@ from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
 from temporal_continuity import anchor_chunk_start
-from boundary_probe import block_start_frame, capture_latent_pair, capture_final_context
+from boundary_probe import (block_start_frame, capture_latent_pair, capture_final_context,
+                            pre_output_boundary_metrics, write_boundary_signal)
 from rollout_capture import save_rollout_block
 
 
@@ -187,6 +188,11 @@ def _parse_args():
         default=None,
         help="Directory for --boundary_probe_block snapshots.")
     parser.add_argument(
+        "--boundary_signal_dir",
+        type=str,
+        default=None,
+        help="Experiment: write per-request pre-output latent boundary scalars as JSON.")
+    parser.add_argument(
         "--rollout_latent_dir",
         type=str,
         default=None,
@@ -223,8 +229,11 @@ def generate(args):
     probe_dir = Path(args.boundary_probe_dir) if args.boundary_probe_dir else None
     if probe_dir:
         probe_dir.mkdir(parents=True, exist_ok=True)
+    signal_dir = Path(args.boundary_signal_dir) if args.boundary_signal_dir else None
     rollout_dir = Path(args.rollout_latent_dir) if args.rollout_latent_dir else None
     rank = int(os.getenv("RANK", 0))
+    if signal_dir and rank == 0:
+        signal_dir.mkdir(parents=True, exist_ok=True)
     world_size = int(os.getenv("WORLD_SIZE", 1))
     local_rank = int(os.getenv("LOCAL_RANK", 0))
     device = local_rank
@@ -477,9 +486,11 @@ def generate(args):
         iter_total_num = int(audio_len / (vae_stride[0] * blksz_lst[-1] / fps)) + 1
         print('----iter_total_num=', iter_total_num)
         gen_video_list = []
+        boundary_signals = [] if signal_dir is not None and rank == 0 else None
         torch.manual_seed(args.seed)
         for _ in range(iter_total_num):
             t1 = time.time()
+            signal_steps = [] if boundary_signals is not None and _ > 0 else None
             audio_start_idx, audio_end_idx = 0, frame_num
             if (_ - 1) * blksz_lst[-1] * vae_stride[0] > 0:
                 audio_start_idx += (_ - 1) * blksz_lst[-1] * vae_stride[0]
@@ -530,6 +541,9 @@ def generate(args):
                     dt = dt / 1000
                     # latent = latent + (-noise_pred) * dt[0]
                     x0_pred = latent + (-noise_pred) * (timesteps[i][0]/1000 - 0.0)
+                    if signal_steps is not None and i in (0, len(timesteps) - 2):
+                        signal_steps.append({"step_index": i, "timestep": float(timestep_values[i]),
+                                             "metrics": pre_output_boundary_metrics(pre_latent, x0_pred)})
                     if probe_dir is not None and _ == args.boundary_probe_block:
                         snapshot = capture_latent_pair(pre_latent, x0_pred)
                         snapshot.update({"block_index": _, "step_index": i,
@@ -555,6 +569,8 @@ def generate(args):
                     _latent = torch.concat([pre_latent[:, -3:], latent], dim=1)
                     _videos = vae.decode(_latent.squeeze(0))[:, :, 9:]
                 pre_latent = latent
+                if signal_steps is not None:
+                    boundary_signals.append({"block_index": _, "steps": signal_steps})
                 gen_video_list.append(_videos.cpu())
 
                 if args.dura_print:
@@ -570,6 +586,16 @@ def generate(args):
         video_path = 'tmp.mp4'
         export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
         add_audio_to_video(video_path, audio_path, out_path)
+        if boundary_signals is not None:
+            write_boundary_signal(signal_dir / f"request-{_item_idx}.json", boundary_signals,
+                                  seed=args.seed, image_path=image_path, audio_path=audio_path,
+                                  output_path=out_path,
+                                  settings={"size": args.size, "fps": fps,
+                                            "denoising_steps": args.denoising_steps,
+                                            "motion_anchor_strength": args.motion_anchor_strength,
+                                            "fp8_gemm": args.fp8_gemm, "fp8_kv_cache": args.fp8_kv_cache,
+                                            "block_offload": args.block_offload,
+                                            "resident_kv_steps": args.resident_kv_steps})
         if args.serve_stdin:
             print('LIVEACT_RESULT ' + json.dumps({
                 'output_path': out_path,
