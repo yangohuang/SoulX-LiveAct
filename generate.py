@@ -29,7 +29,8 @@ from diffusers.utils import export_to_video
 
 from fp8_gemm import FP8GemmOptions, enable_fp8_gemm
 from fp4_gemm import FP4GemmOptions, enable_fp4_gemm
-from runtime_options import add_low_memory_arguments, allocate_kv_caches, maybe_compile
+from runtime_options import (add_low_memory_arguments, allocate_kv_caches,
+                             configure_cudnn_benchmark, maybe_compile)
 from denoising_schedule import denoising_schedule
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
@@ -216,6 +217,7 @@ def torch_gc():
 
 def generate(args):
     startup_started = time.perf_counter()
+    configure_cudnn_benchmark(args.disable_cudnn_benchmark)
     if args.fp8_cache_dir and not (args.fp8_gemm and args.block_offload):
         raise ValueError("--fp8_cache_dir requires --fp8_gemm and --block_offload")
     if args.build_fp8_cache and not args.fp8_cache_dir:

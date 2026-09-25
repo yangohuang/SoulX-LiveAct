@@ -1,0 +1,8 @@
+[
+  {
+    "prompt": "一个人在说话",
+    "cond_image": "examples/image/1.png",
+    "cond_audio": "/tmp/liveact-profile-1p5s.wav",
+    "output_path": "/tmp/liveact-determinism-a.mp4"
+  }
+]

@@ -205,6 +205,14 @@ versus BF16 weights. This configuration is still far from real time. See the
 measurements and GPU memory. `--pin_block_memory` requires substantially more
 free host RAM.
 
+For fixed-seed comparisons across separate process launches, add
+`--disable_cudnn_benchmark`. On one RTX 4090, this made two independent
+416×720, three-step, 5-second runs produce identical MP4 hashes; the default
+cuDNN benchmark setting produced different audio and VAE conditioning tensors
+before DiT sampling. The option keeps the default unchanged and does not
+guarantee identical output across different hardware or software versions.
+See the [determinism diagnostic](docs/benchmarks/2026-09-25-fixed-seed-determinism-diagnostic.md).
+
 For repeated use, add `--fp8_cache_dir /path/to/dit-fp8-cache`,
 `--build_fp8_cache`, and `--prompt_cache_dir /path/to/prompt-cache` to the
 command above once. The FP8 cache is written after quantization; the prompt cache stores T5
@@ -284,6 +292,7 @@ python generate.py \
 | `--block_offload`   | bool  | No       | false   | Whether to offload model blocks to CPU between block forwards.|
 | `--disable_compile` | bool  | No       | false   | Skip `torch.compile` to reduce cold-start time and memory. |
 | `--pin_block_memory` | bool | No       | false   | Pin all CPU-offloaded DiT weights for faster transfers. Requires substantially more host RAM. |
+| `--disable_cudnn_benchmark` | bool | No | false | Use a stable cuDNN algorithm choice for fixed-seed cross-process comparisons. |
 | `--fp8_cache_dir` | str | No | - | Load an offline FP8 DiT cache; requires FP8 GEMM and block offload. |
 | `--build_fp8_cache` | bool | No | false | Build the FP8 cache once from BF16 weights. |
 | `--prompt_cache_dir` | str | No | - | Read or build T5 embeddings for the exact prompt catalog. |

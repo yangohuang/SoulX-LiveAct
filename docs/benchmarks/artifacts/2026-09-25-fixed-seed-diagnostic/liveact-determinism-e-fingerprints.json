@@ -1,0 +1,411 @@
+{
+  "argv": [
+    "generate.py",
+    "--size",
+    "224*384",
+    "--ckpt_dir",
+    "checkpoints/LiveAct",
+    "--wav2vec_dir",
+    "checkpoints/chinese-wav2vec2-base",
+    "--fps",
+    "24",
+    "--seed",
+    "42",
+    "--denoising_steps",
+    "3",
+    "--input_json",
+    "/tmp/liveact-determinism-e-request.json",
+    "--fp8_gemm",
+    "--fp8_kv_cache",
+    "--offload_cache",
+    "--block_offload",
+    "--t5_cpu",
+    "--disable_compile",
+    "--resident_kv_steps",
+    "1",
+    "--fp8_cache_dir",
+    "/tmp/liveact-fp8-cache",
+    "--prompt_cache_dir",
+    "/tmp/liveact-prompt-cache"
+  ],
+  "cudnn_benchmark": false,
+  "cudnn_deterministic": false,
+  "records": [
+    {
+      "name": "reference_image",
+      "shape": [
+        1,
+        3,
+        1,
+        384,
+        224
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "1bb11911bf1e9381fee6672e6f62266ab32a126f6bf37fbb4be89450112ae9fd"
+    },
+    {
+      "name": "clip_context",
+      "shape": [
+        1,
+        257,
+        1280
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "eabd8f78fdf56f9f55c2a16df5c08e984a8447d3060d1e080c5d006531d00f35"
+    },
+    {
+      "name": "resampled_audio",
+      "shape": [
+        23040
+      ],
+      "dtype": "torch.float32",
+      "sha256": "72b388b6f49373d7d5f24e4cbf878c2dc8778915a9403acde4bdd88c24fe81c2"
+    },
+    {
+      "name": "wav2vec_embedding",
+      "shape": [
+        36,
+        12,
+        768
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "edaaa27d82f1d60a99413bba63989b79caa982c90d0b7eb2af43cf8305bb05b4"
+    },
+    {
+      "name": "vae_encode_input",
+      "shape": [
+        1,
+        3,
+        53,
+        384,
+        224
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "1f5901e2dff7a9cbca3dd6e1c46e9820569c2b501fb675348e0634ca141b41d5"
+    },
+    {
+      "name": "vae_reference_latent",
+      "shape": [
+        16,
+        14,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "8f7dfdd6a17dccf1fc531cc2a05e0c11484522b2561850b59875304f7c496f23"
+    },
+    {
+      "name": "manual_seed",
+      "value": 42
+    },
+    {
+      "name": "randn_0",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "8016bad766d048a4044ecef1f270792dbcefe9941956e1efe47cf55b6084e777"
+    },
+    {
+      "name": "dit_input_0",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "8016bad766d048a4044ecef1f270792dbcefe9941956e1efe47cf55b6084e777"
+    },
+    {
+      "name": "dit_clip_fea_0",
+      "shape": [
+        1,
+        257,
+        1280
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "eabd8f78fdf56f9f55c2a16df5c08e984a8447d3060d1e080c5d006531d00f35"
+    },
+    {
+      "name": "dit_audio_0",
+      "shape": [
+        1,
+        53,
+        5,
+        12,
+        768
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "14c80f6b9c4ad940cadaa7c5c3a7eea13e39ff886c1fe68927ffaf6df18bbfb9"
+    },
+    {
+      "name": "dit_y_0",
+      "shape": [
+        1,
+        20,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "8720d649a104dbbbe53d43967411852c0c87da9e2e6cd84772e6adfeb62e93e6"
+    },
+    {
+      "name": "dit_context_0",
+      "shape": [
+        7,
+        4096
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "d08d4dddbb1e38c2d8e9695c7a0c6d8d7a1e8887dedca993d2f1578cf8e68d79"
+    },
+    {
+      "name": "dit_output_0",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "4081197898004a77ea8bce40d57fb961110de4827a7bd4e2f7a4fb6b80173a6d"
+    },
+    {
+      "name": "randn_like_1",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "0bd5073b6630a5fbe564af6b2ec4943050c3e75c7affc8c9c17d76e92cda8b14"
+    },
+    {
+      "name": "dit_input_1",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "9a69f0548e5420d5e2fc2f593c1567e5187f6a6acb1206c90dc3858675d9d1dd"
+    },
+    {
+      "name": "dit_output_1",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "0db1de351f7ae836e2299c3768fc09bec6454ffd50be39f64e16797cb9f37452"
+    },
+    {
+      "name": "randn_like_2",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "7b1054ab33b5371e614a5a410287f53262d598b16551e0d6facf3d3b8145504d"
+    },
+    {
+      "name": "dit_input_2",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "0969ea0e9b4cf0bf27185994786b6f32c1ef89ae745cb43fa8401b0069169a3b"
+    },
+    {
+      "name": "dit_output_2",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "1df509cdaab6619f4bdd6222f56b05a569bfc3131019145ed63cfe0ab1ffaf89"
+    },
+    {
+      "name": "randn_like_3",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "c6a8e34ecfa54583f255270328681db9a0052da3929f0771da43532a652d7d33"
+    },
+    {
+      "name": "vae_decode_input_0",
+      "shape": [
+        16,
+        6,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "226acf11a2732ba96a3e5c1f0a34be51fd98367f7c357f5368ded1af45b61fb1"
+    },
+    {
+      "name": "vae_decode_output_0",
+      "shape": [
+        1,
+        3,
+        21,
+        384,
+        224
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "b8f5a0d32a73737bad66cbd1ce7f85df181c75cedd6479a553674afb72e22884"
+    },
+    {
+      "name": "randn_4",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "b9af567a546beab20a19f41ea21dc6af8451b2bb987a85a22d71ce870e6888d1"
+    },
+    {
+      "name": "dit_input_3",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "b9af567a546beab20a19f41ea21dc6af8451b2bb987a85a22d71ce870e6888d1"
+    },
+    {
+      "name": "dit_output_3",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "3685b200360e66f2de11b15829c2dee150fe37fa33421f5a12f38438cd2191b2"
+    },
+    {
+      "name": "randn_like_5",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "048baf75843e88df2c1245e9f216fc419cc0d70baf732736e564133c5b31a6d6"
+    },
+    {
+      "name": "dit_input_4",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "149f524d4ac463edb5a60b9d97713ba9e12ee20a3fff3f012a986e918b6c8f4c"
+    },
+    {
+      "name": "dit_output_4",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "5e5ff7e3495b01d68e238eeefcb2a54eda27cba6dd9c56681c6cf98a91717407"
+    },
+    {
+      "name": "randn_like_6",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "4cfa77520a974c982d2b0a3f338b485a5b435bd730b988a3570fbf2292cef084"
+    },
+    {
+      "name": "dit_input_5",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "3a94f8425dde1fc2e4ff88fdc119436c11246f010657dca72878c4b643d6065d"
+    },
+    {
+      "name": "dit_output_5",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "5b4132d27553dffcf7afd9a82b3918a41a1ca71645a7e0c2a6291942ee5d18ab"
+    },
+    {
+      "name": "randn_like_7",
+      "shape": [
+        16,
+        8,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "0af261604b594973e007b21875039367c82294489225b5ea50a35bbb0625e59d"
+    },
+    {
+      "name": "vae_decode_input_1",
+      "shape": [
+        16,
+        11,
+        48,
+        28
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "edc79367626bc2f2b8ac8b40986887d6fec73ccfdf16f0523dbbd61517cfdc20"
+    },
+    {
+      "name": "vae_decode_output_1",
+      "shape": [
+        1,
+        3,
+        41,
+        384,
+        224
+      ],
+      "dtype": "torch.bfloat16",
+      "sha256": "1b41266e3d369d809bb7c3229bbcb6a6d6845afefd46ce1ca98893dd06cb086b"
+    }
+  ]
+}

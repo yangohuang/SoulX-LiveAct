@@ -16,7 +16,18 @@ def add_low_memory_arguments(parser):
         default=False,
         help="Pin all CPU-offloaded DiT block weights. This speeds transfers but needs substantial additional host memory.",
     )
+    parser.add_argument(
+        "--disable_cudnn_benchmark",
+        action="store_true",
+        default=False,
+        help="Use a stable cuDNN algorithm choice across independent processes for reproducible fixed-seed experiments.",
+    )
     return parser
+
+
+def configure_cudnn_benchmark(disable):
+    if disable:
+        torch.backends.cudnn.benchmark = False
 
 
 def maybe_compile(target, enabled, compiler):

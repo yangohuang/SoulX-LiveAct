@@ -34,6 +34,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--arm", choices=("pageable", "pinned"), required=True)
     parser.add_argument("--size", choices=("224*384", "416*720"), required=True)
+    parser.add_argument("--disable-cudnn-benchmark", action="store_true",
+                        help="Keep cuDNN's algorithm choice stable across independent runs.")
     parser.add_argument("--output-prefix", type=Path, required=True)
     args = parser.parse_args()
 
@@ -65,6 +67,8 @@ def main() -> None:
     ]
     if args.arm == "pinned":
         cmd.append("--pin_block_memory")
+    if args.disable_cudnn_benchmark:
+        cmd.append("--disable_cudnn_benchmark")
     env = os.environ.copy()
     env["USE_CHANNELS_LAST_3D"] = "1"
     env["CUDA_VISIBLE_DEVICES"] = "0"

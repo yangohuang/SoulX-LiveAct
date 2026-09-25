@@ -1,0 +1,192 @@
+{
+  "hardware": "one RTX 4090, 62-GiB host RAM",
+  "image_sha256": "83f745e79892daf682857aaaf182a9f20748c0f4ffbf03fb527c0ffcf73b76d4",
+  "audio_1p5s_sha256": "bc664bede97fa844a8876837d97c175d35dc78aed2fbd5de2f5aef31efeac177",
+  "audio_5s_sha256": "461a35303d0ec2ac87e9d7fda67ecb9fa5ebfd503e5e1b279f2b7c3c19fe8ec0",
+  "fp8_cache_manifest_sha256": "ab0365eda39680d8e3d0e02dc1fd813d69bbb491d049a93884a1f269b90e9d2b",
+  "prompt_cache_manifest_sha256": "faf5667e624885ad3768b0c5c62174cf2415bd8ecb2373ccf687a14eae43d764",
+  "vae_sha256": "38071ab59bd94681c686fa51d75a1968f64e470262043be31f7a094e442fd981",
+  "wav2vec_sha256": "be2da40c9e7ae26bfc904a3ed79ebb9e8f060bec6dba85d6a6ae86114bc38901",
+  "clip_sha256": "628c9998b613391f193eb67ff68da9667d75f492911e4eb3decf23460a158c38",
+  "two_block_pairs": {
+    "a": {
+      "video_sha256": "039e0b73db3be696cd895cd986a43f5bf0a8e9157163ead49f660df6b30b09b9"
+    },
+    "b": {
+      "video_sha256": "ec7afe1bb147aedc9e6ae5f2d2d63bb557b67139f67226c5788b58bb0b5b4eb3"
+    },
+    "c": {
+      "video_sha256": "dd2a29ead6c852a3d40f1645a8133006f86510acf4bed031daaf33e9e4291ae9"
+    },
+    "d": {
+      "video_sha256": "dd2a29ead6c852a3d40f1645a8133006f86510acf4bed031daaf33e9e4291ae9"
+    },
+    "e": {
+      "video_sha256": "dd2a29ead6c852a3d40f1645a8133006f86510acf4bed031daaf33e9e4291ae9"
+    },
+    "f": {
+      "video_sha256": "dd2a29ead6c852a3d40f1645a8133006f86510acf4bed031daaf33e9e4291ae9"
+    },
+    "g": {
+      "video_sha256": "e6a59beb55e667819521e7ab5dc8888dad17159f37611a045da4f1cf17857df3"
+    },
+    "h": {
+      "video_sha256": "48bdb0a8aebee2f573a2a051f0a9aabb58126107ce3624f182c6e4c7879a6c90"
+    },
+    "ab": {
+      "policy": "default",
+      "fingerprints": 35,
+      "first_divergence": "wav2vec_embedding",
+      "different_fingerprints": [
+        "wav2vec_embedding",
+        "vae_reference_latent",
+        "dit_audio_0",
+        "dit_y_0",
+        "dit_output_0",
+        "dit_input_1",
+        "dit_output_1",
+        "dit_input_2",
+        "dit_output_2",
+        "vae_decode_input_0",
+        "vae_decode_output_0",
+        "dit_output_3",
+        "dit_input_4",
+        "dit_output_4",
+        "dit_input_5",
+        "dit_output_5",
+        "vae_decode_input_1",
+        "vae_decode_output_1"
+      ],
+      "video_sha256_equal": false
+    },
+    "cd": {
+      "policy": "benchmark_off_deterministic_on",
+      "fingerprints": 35,
+      "first_divergence": null,
+      "different_fingerprints": [],
+      "video_sha256_equal": true
+    },
+    "ef": {
+      "policy": "benchmark_off_only",
+      "fingerprints": 35,
+      "first_divergence": null,
+      "different_fingerprints": [],
+      "video_sha256_equal": true
+    },
+    "gh": {
+      "policy": "deterministic_only",
+      "fingerprints": 35,
+      "first_divergence": "wav2vec_embedding",
+      "different_fingerprints": [
+        "wav2vec_embedding",
+        "vae_reference_latent",
+        "dit_audio_0",
+        "dit_y_0",
+        "dit_output_0",
+        "dit_input_1",
+        "dit_output_1",
+        "dit_input_2",
+        "dit_output_2",
+        "vae_decode_input_0",
+        "vae_decode_output_0",
+        "dit_output_3",
+        "dit_input_4",
+        "dit_output_4",
+        "dit_input_5",
+        "dit_output_5",
+        "vae_decode_input_1",
+        "vae_decode_output_1"
+      ],
+      "video_sha256_equal": false
+    }
+  },
+  "five_second_runs": {
+    "cudnn-off-224-a": {
+      "video_sha256": "54375fcfeee6cf741f6226999af4e7f848388d600eb8f1aeaea34089be31c5c6",
+      "block_cost_ms": [
+        7067.77,
+        7766.18,
+        7203.02,
+        7455.32
+      ],
+      "later_median_ms": 7455.32,
+      "minimum_mem_available_mib": 44489,
+      "maximum_sampled_gpu_process_mib": 6160,
+      "decoded_video_frames": 117
+    },
+    "cudnn-off-224-b": {
+      "video_sha256": "54375fcfeee6cf741f6226999af4e7f848388d600eb8f1aeaea34089be31c5c6",
+      "block_cost_ms": [
+        7084.88,
+        7728.71,
+        7171.08,
+        7414.31
+      ],
+      "later_median_ms": 7414.31,
+      "minimum_mem_available_mib": 44551,
+      "maximum_sampled_gpu_process_mib": 6160,
+      "decoded_video_frames": 117
+    },
+    "cudnn-default-416": {
+      "video_sha256": "df74892129fccda6f457792a7b169a7a373da3877ca8d4649bf9ca942c47d135",
+      "block_cost_ms": [
+        18046.93,
+        19059.38,
+        18977.49,
+        18955.2
+      ],
+      "later_median_ms": 18977.49,
+      "minimum_mem_available_mib": 36447,
+      "maximum_sampled_gpu_process_mib": 15582,
+      "decoded_video_frames": 117
+    },
+    "cudnn-off-416-a": {
+      "video_sha256": "013f26f14b07b0cb1fbfb0408541b681b0a7b173cd5aab3338ca8d90217577bc",
+      "block_cost_ms": [
+        16319.12,
+        18815.53,
+        19061.48,
+        19025.39
+      ],
+      "later_median_ms": 19025.39,
+      "minimum_mem_available_mib": 37306,
+      "maximum_sampled_gpu_process_mib": 15444,
+      "decoded_video_frames": 117
+    },
+    "cudnn-off-416-b": {
+      "video_sha256": "013f26f14b07b0cb1fbfb0408541b681b0a7b173cd5aab3338ca8d90217577bc",
+      "block_cost_ms": [
+        16330.3,
+        18832.39,
+        19086.1,
+        19058.8
+      ],
+      "later_median_ms": 19058.8,
+      "minimum_mem_available_mib": 36748,
+      "maximum_sampled_gpu_process_mib": 15444,
+      "decoded_video_frames": 117
+    }
+  },
+  "default_pair_tensor_error": {
+    "wav2vec_embedding": {
+      "mae": 0.0018997680163010955,
+      "rmse": 0.003172831377014518,
+      "relative_rmse": 0.012574358843266964
+    },
+    "vae_reference_latent": {
+      "mae": 1.1275212273176294e-05,
+      "rmse": 0.00031611850135959685,
+      "relative_rmse": 0.00025137816555798054
+    },
+    "dit_output_0": {
+      "mae": 0.03048938885331154,
+      "rmse": 0.04493945091962814,
+      "relative_rmse": 0.03699280694127083
+    },
+    "vae_decode_output_0": {
+      "mae": 0.01667012833058834,
+      "rmse": 0.0368058979511261,
+      "relative_rmse": 0.09706387668848038
+    }
+  }
+}
