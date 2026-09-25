@@ -40,4 +40,4 @@
 **Files:** roadmap, interview evidence card, workspace memory
 
 - [x] Run full tests and artifact verification once more; review git diff and ensure no official PR.
-- [ ] Update roadmap/interview record with the result, push this isolated branch to the personal fork, verify remote SHA and clean state.
+- [x] Update roadmap/interview record with the result, push this isolated branch to the personal fork, verify remote SHA and clean state.
