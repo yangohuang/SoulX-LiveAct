@@ -1,0 +1,26 @@
+{
+  "identity": 1,
+  "pipeline": "joonson/syncnet_python local run_pipeline.py and run_syncnet.py; 25fps S3FD face crop",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "videos": {
+    "baseline": {
+      "source": "docs/benchmarks/artifacts/videos/baseline-30s.mp4",
+      "sha256": "3a897abdf5c771ebfc8bf6278cdc485d3293e7d63b34a093dd5356863e142157",
+      "converted_frames": 754,
+      "tracks": 1,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 7.672,
+      "confidence": 7.079
+    },
+    "anchor045": {
+      "source": "docs/benchmarks/artifacts/videos/anchor-045-30s.mp4",
+      "sha256": "fc8995aafc94f03fe2442bc108b992f89e21217e8301492a438b61a6705efff2",
+      "converted_frames": 754,
+      "tracks": 1,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 7.989,
+      "confidence": 6.599
+    }
+  },
+  "note": "Values transcribed from /tmp/liveact-syncnet-{baseline,anchor}-score.log generated on 2026-09-24; prior report documents setup."
+}
