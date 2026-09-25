@@ -31,4 +31,4 @@
 **Files:** study report, roadmap, interview evidence, memory
 
 - [x] Record source/input hashes, tests, visual conclusion, decode latency and limitations; do not claim a general repair.
-- [ ] Run full tests and video/JSON verification, then commit and sync only the personal fork; verify remote SHA and clean worktree.
+- [x] Run full tests and video/JSON verification, then commit and sync only the personal fork; verify remote SHA and clean worktree.
