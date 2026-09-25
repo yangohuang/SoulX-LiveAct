@@ -1,0 +1,20 @@
+{
+  "seed": 43,
+  "fps": 24,
+  "source_embedding_sha256": "192ba670e85f05a2630af10f1262d9e9c0f9becdcf566d4f0dbcc42d3d96e77d",
+  "shared_blocks": 8,
+  "shared_pre_encoder_frames": 245,
+  "first_different_block_by_field": {
+    "audio_window_sha256": 7,
+    "initial_noise_sha256": null,
+    "final_latent_sha256": 7,
+    "decoded_block_sha256": 7
+  },
+  "first_different_pre_encoder_frame": 213,
+  "inputs": {
+    "short_audit": "docs/benchmarks/artifacts/2026-09-25-terminal-horizon-divergence/liveact-terminal-clamp-short10.frame-audit.json",
+    "long_audit": "docs/benchmarks/artifacts/2026-09-25-terminal-horizon-divergence/liveact-terminal-clamp-long20.frame-audit.json",
+    "short_features": "docs/benchmarks/artifacts/2026-09-25-terminal-horizon-divergence/liveact-terminal-clamp-short10.audio-embedding.json",
+    "long_features": "docs/benchmarks/artifacts/2026-09-25-terminal-horizon-divergence/liveact-terminal-clamp-long20.audio-embedding.json"
+  }
+}

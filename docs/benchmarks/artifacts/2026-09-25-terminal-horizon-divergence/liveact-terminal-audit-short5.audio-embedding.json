@@ -1,0 +1,31 @@
+{
+  "source_wav": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/2026-09-25-two-step-audio-conditioning/liveact-step-audio-first5s.wav",
+  "source_wav_sha256": "ff24d5c18d501308969679f5b663daf7b0d59465b36a6931eb921095e3f0f20f",
+  "request_wav": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/2026-09-25-two-step-audio-conditioning/liveact-step-audio-first5s.wav",
+  "request_wav_sha256": "ff24d5c18d501308969679f5b663daf7b0d59465b36a6931eb921095e3f0f20f",
+  "source_embedding_shape": [
+    120,
+    12,
+    768
+  ],
+  "target_embedding_shape": [
+    120,
+    12,
+    768
+  ],
+  "dtype": "torch.bfloat16",
+  "source_embedding_sha256": "c76311cb545d25d166d2f38fe3d0fdea4a74efa1b18a95be897fd3c73e734272",
+  "fingerprints": {
+    "period_frames": 120,
+    "repeat_count": 1,
+    "interior_margin_frames": 48,
+    "context_radius_frames": 2,
+    "period_sha256": [
+      "c76311cb545d25d166d2f38fe3d0fdea4a74efa1b18a95be897fd3c73e734272"
+    ],
+    "interior_context_sha256": [
+      "03949d74d448674c3cadbd60c014127266fd0faff4cdb7c83b69feb536770f87"
+    ]
+  },
+  "method": "whole request encoded for target length; source WAV separately SoX-tempo/Wav2Vec encoded; source features tiled"
+}

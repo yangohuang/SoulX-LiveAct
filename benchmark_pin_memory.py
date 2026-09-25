@@ -42,6 +42,8 @@ def main() -> None:
                         help="Condition both two-step DiT forwards on audio.")
     parser.add_argument("--audio-embedding-repeat-source", type=Path,
                         help="Tile the Wav2Vec features of this WAV to the request audio length.")
+    parser.add_argument("--frame-audit", action="store_true",
+                        help="Save default-off block and pre-encoder frame hashes.")
     parser.add_argument("--resident-kv-steps", type=int, choices=(0, 1), default=1)
     parser.add_argument("--disable-cudnn-benchmark", action="store_true",
                         help="Keep cuDNN's algorithm choice stable across independent runs.")
@@ -83,6 +85,8 @@ def main() -> None:
         cmd.append("--audio_first_step")
     if args.audio_embedding_repeat_source:
         cmd.extend(["--audio_embedding_repeat_source", str(args.audio_embedding_repeat_source)])
+    if args.frame_audit:
+        cmd.append("--frame_audit")
     env = os.environ.copy()
     env["USE_CHANNELS_LAST_3D"] = "1"
     env["CUDA_VISIBLE_DEVICES"] = "0"

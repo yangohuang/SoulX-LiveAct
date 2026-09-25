@@ -34,6 +34,7 @@ from runtime_options import (add_low_memory_arguments, allocate_kv_caches,
                              configure_cudnn_benchmark, maybe_compile)
 from denoising_schedule import denoising_schedule
 from audio_embedding_repeat import repeat_embedding, period_fingerprints, tensor_sha256
+from frame_audit import exporter_frame_sha256
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
@@ -149,6 +150,8 @@ def _parse_args():
         type=str,
         default=None,
         help="Experiment: tile the exact Wav2Vec features of this WAV to the request's audio length; non-streaming audio only.")
+    parser.add_argument("--frame_audit", action="store_true",
+                        help="Experiment: record block and pre-encoder frame hashes without saving tensors.")
     parser.add_argument(
         "--fp8_cache_dir",
         type=str,
@@ -538,6 +541,7 @@ def generate(args):
         iter_total_num = int(audio_len / (vae_stride[0] * blksz_lst[-1] / fps)) + 1
         print('----iter_total_num=', iter_total_num)
         gen_video_list = []
+        frame_audit_blocks = [] if args.frame_audit else None
         boundary_signals = [] if signal_dir is not None and rank == 0 else None
         torch.manual_seed(args.seed)
         for _ in range(iter_total_num):
@@ -557,6 +561,12 @@ def generate(args):
                 audio_embedding = get_embedding(audio[0], wav2vec_feature_extractor, audio_encoder, device=device)
                 audio_embs = get_audio_emb(audio_embedding, 0, frame_num, device)
 
+            block_audit = ({"block_index": _, "first_output_frame": block_start_frame(_),
+                            "audio_start_idx": audio_start_idx,
+                            "audio_end_idx": audio_end_idx,
+                            "audio_window_sha256": tensor_sha256(audio_embs)}
+                           if frame_audit_blocks is not None else None)
+
             y_cut = y[:, :, :frame_num // 4 + 1, ...]
 
             _context = context
@@ -570,6 +580,8 @@ def generate(args):
                 f = _ if _ <= 1 else 1
                 latent = torch.randn(16, blksz_lst[f], height // vae_stride[1], width // vae_stride[2],
                                      dtype=torch.bfloat16, device=device)
+                if block_audit is not None:
+                    block_audit["initial_noise_sha256"] = tensor_sha256(latent)
                 for i in tqdm(range(len(timesteps) - 1)):
                     timestep = timesteps[i]
                     arg_c = {'context': _context, 'clip_fea': clip_context, 'ref_target_masks': ref_target_masks,
@@ -629,6 +641,11 @@ def generate(args):
                     _latent = torch.concat([pre_latent[:, -3:], latent], dim=1)
                     _videos = vae.decode(_latent.squeeze(0))[:, :, 9:]
                 pre_latent = latent
+                if block_audit is not None:
+                    block_audit["final_latent_sha256"] = tensor_sha256(latent)
+                    block_audit["decoded_block_sha256"] = tensor_sha256(_videos)
+                    block_audit["decoded_block_shape"] = list(_videos.shape)
+                    frame_audit_blocks.append(block_audit)
                 if signal_steps is not None:
                     boundary_signals.append({"block_index": _, "steps": signal_steps})
                 gen_video_list.append(_videos.cpu())
@@ -644,7 +661,20 @@ def generate(args):
 
         videos = (torch.concat(gen_video_list, dim=2).permute((0, 2, 3, 4, 1))[0] + 1.0) / 2
         video_path = 'tmp.mp4'
-        export_to_video(videos[:, ...].float().cpu().numpy(), video_path, fps=fps)
+        video_frames = videos[:, ...].float().cpu().numpy()
+        if frame_audit_blocks is not None:
+            audit_path = Path(out_path).with_suffix(".frame-audit.json")
+            audit_path.parent.mkdir(parents=True, exist_ok=True)
+            audit_path.write_text(json.dumps({
+                "output_path": str(out_path), "seed": args.seed, "fps": fps,
+                "pre_encoder_frame_count": len(video_frames),
+                "pre_encoder_frame_shape": list(video_frames.shape[1:]),
+                "exporter_conversion": "(RGB_float_0_to_1 * 255).astype(uint8)",
+                "blocks": frame_audit_blocks,
+                "pre_encoder_frame_sha256": exporter_frame_sha256(video_frames),
+            }, indent=2) + "\n")
+            print(f"Frame audit: {audit_path}", flush=True)
+        export_to_video(video_frames, video_path, fps=fps)
         add_audio_to_video(video_path, audio_path, out_path)
         if boundary_signals is not None:
             write_boundary_signal(signal_dir / f"request-{_item_idx}.json", boundary_signals,

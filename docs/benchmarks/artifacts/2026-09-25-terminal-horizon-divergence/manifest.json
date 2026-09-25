@@ -1,0 +1,157 @@
+{
+  "experiment": "terminal-horizon-divergence",
+  "inputs": {
+    "image_2": {
+      "path": "examples/image/2.png",
+      "size_bytes": 1936257,
+      "sha256": "7f9c1d2567ca391200b1a76b2e07442111d4472493411b59195f80872d078550"
+    },
+    "source_5s": {
+      "path": "docs/benchmarks/artifacts/2026-09-25-two-step-audio-conditioning/liveact-step-audio-first5s.wav",
+      "size_bytes": 160078,
+      "sha256": "ff24d5c18d501308969679f5b663daf7b0d59465b36a6931eb921095e3f0f20f"
+    }
+  },
+  "artifacts": {
+    "audio-window-index-audit.json": {
+      "size_bytes": 4827,
+      "sha256": "a558cb520c53fb2a50865e343804aae2d21602e0eb42dca660ac7dab9c02448e"
+    },
+    "audit-10-vs-20.json": {
+      "size_bytes": 964,
+      "sha256": "c917b890ca2eeb957555a9e4226f206148e7530c44e340379cff7e500dc5447e"
+    },
+    "audit-5-vs-10.json": {
+      "size_bytes": 972,
+      "sha256": "573f59a081d799a89f42c6551390a1ea8505a8e5c907050832690f726fb8d476"
+    },
+    "clamp-pair-mp4-comparison.json": {
+      "size_bytes": 3791,
+      "sha256": "af21cd4d11ef7ae7c6fbaa158239686e36c44c690c8fde2ec78da256bd593bd0"
+    },
+    "codec-only-comparison.json": {
+      "size_bytes": 18993,
+      "sha256": "05dcca59d50e9ceba7aa6bd2ca322f330a011c9fdf4ac6c8e99027f6972f29f4"
+    },
+    "codec-only-full2162.mp4": {
+      "size_bytes": 5966564,
+      "sha256": "4df578169b42b0a3570bb1d264df15f22f18ec29b00beb78a996a7b945f05c5f"
+    },
+    "codec-only-prefix722.mp4": {
+      "size_bytes": 1985702,
+      "sha256": "4148c589a860f704c2e0a1e15e770248b5e4c9462054b6c2f7a2a2b458a07c54"
+    },
+    "divergence-timeline.png": {
+      "size_bytes": 110749,
+      "sha256": "645c30c03a7abfb6c4c1791215ab6f4431e939b9a39d689e4bcbe52baa973b55"
+    },
+    "liveact-image2-repeat10x2-20s.wav": {
+      "size_bytes": 640044,
+      "sha256": "74b9f19b2928797d73678cb620fee8383cc52695db8e40b866efdd71a58333d0"
+    },
+    "liveact-image2-repeat5x2-10s.wav": {
+      "size_bytes": 320044,
+      "sha256": "db085e1e445d742a4fbf500b3a4257864c80213d8acdc0b2f916032eede61a5f"
+    },
+    "liveact-terminal-audit-long10-request.json": {
+      "size_bytes": 269,
+      "sha256": "6ab5fb1b98f01d90cf20a5f9edeac6b738ad7d70331aa2c260789a87f303de5f"
+    },
+    "liveact-terminal-audit-long10-resources.json": {
+      "size_bytes": 18287,
+      "sha256": "0110afba89bcb844fa646cac019f9fb486c55591bf8dd723768a9cff23540423"
+    },
+    "liveact-terminal-audit-long10.audio-embedding.json": {
+      "size_bytes": 1421,
+      "sha256": "f42253ea63e4693023ea0859ff075ecc153048daae2b589529fc952c5d0b7503"
+    },
+    "liveact-terminal-audit-long10.frame-audit.json": {
+      "size_bytes": 22857,
+      "sha256": "22eb5cdd13b92e6e01b3c1d76d0b1370525ec70f91f2187aa6d2332e7fb11c4e"
+    },
+    "liveact-terminal-audit-long10.log.gz": {
+      "size_bytes": 2004,
+      "sha256": "3696ef31813a55cf35d5e15550400c553f9d784ccc80a41afb25850cf49d5044"
+    },
+    "liveact-terminal-audit-long10.mp4": {
+      "size_bytes": 832169,
+      "sha256": "d168166727b4c75682c84f18955f24d2235394b47e97a57dde2c0c7555263a8a"
+    },
+    "liveact-terminal-audit-short5-request.json": {
+      "size_bytes": 267,
+      "sha256": "4130828db9ec75e831418625f43ebbde32fc09fab7be555ddf90ec11bdbd5c9d"
+    },
+    "liveact-terminal-audit-short5-resources.json": {
+      "size_bytes": 10250,
+      "sha256": "d547041b6bf407c6e301f5874499b263d8ca6a943d36a2ed0201aa669b97b6ac"
+    },
+    "liveact-terminal-audit-short5.audio-embedding.json": {
+      "size_bytes": 1271,
+      "sha256": "2964c3aa518190f13a2141a2e6e1f129bace2f56321a04eba9b55d9f9f9ef705"
+    },
+    "liveact-terminal-audit-short5.frame-audit.json": {
+      "size_bytes": 11178,
+      "sha256": "bdea298e9fcf3f391633d2703cb10eee95fda096f87c119b75ebfa588f35aaf5"
+    },
+    "liveact-terminal-audit-short5.log.gz": {
+      "size_bytes": 1953,
+      "sha256": "e534b376874dc1e6ff7d91d18a02c5f2a9c38a26aed368df8c38575398f82c5d"
+    },
+    "liveact-terminal-audit-short5.mp4": {
+      "size_bytes": 399797,
+      "sha256": "9b177bfd9869110ac9e19546bab967ded1d3ce4833ee0fb53edb757767b63997"
+    },
+    "liveact-terminal-clamp-long20-request.json": {
+      "size_bytes": 270,
+      "sha256": "3e14ea56b63a109007e5aa61f5ab32398fb046b585d0d4bd84461ee75340caf9"
+    },
+    "liveact-terminal-clamp-long20-resources.json": {
+      "size_bytes": 34494,
+      "sha256": "69723aab5e9a9a65db4914ac34bad512c8a993f35c7d42ea8d1b7281b45868e8"
+    },
+    "liveact-terminal-clamp-long20.audio-embedding.json": {
+      "size_bytes": 1424,
+      "sha256": "32f09a0f9c3503f802a478fc93c6d6e53206251ee9379d48ad536b60484f96e4"
+    },
+    "liveact-terminal-clamp-long20.frame-audit.json": {
+      "size_bytes": 46223,
+      "sha256": "e0fe8fc92e18d201456a680b6fb78283a2e733f459db189afae9c03e0ad58f31"
+    },
+    "liveact-terminal-clamp-long20.log.gz": {
+      "size_bytes": 2120,
+      "sha256": "2af257c13e33dea0aa060c7725b70d7c0c32de205945a54cb207e7a2bab47251"
+    },
+    "liveact-terminal-clamp-long20.mp4": {
+      "size_bytes": 1643445,
+      "sha256": "1facdbaceaa49e37ab202123ac00522650f158e0aeee77be6e9163afa9d62429"
+    },
+    "liveact-terminal-clamp-short10-request.json": {
+      "size_bytes": 270,
+      "sha256": "f5e24802e9c4a5f51c1ac5f9a54c3ae440fb7af4e38e0b55b83c608320bb419e"
+    },
+    "liveact-terminal-clamp-short10-resources.json": {
+      "size_bytes": 18287,
+      "sha256": "886b43f14b5ac9fb126fe21470a9df6a20f353dbc79b77e7eaaf61dc9b27e7f1"
+    },
+    "liveact-terminal-clamp-short10.audio-embedding.json": {
+      "size_bytes": 1275,
+      "sha256": "1fe9e2be6e90cb8b1a90bd944a380cf5f852e27ee369c4545c5863dfe223a9fe"
+    },
+    "liveact-terminal-clamp-short10.frame-audit.json": {
+      "size_bytes": 22858,
+      "sha256": "a09ac879beed15399ee677ed6413e15c673878713d371872703854f7b1a45279"
+    },
+    "liveact-terminal-clamp-short10.log.gz": {
+      "size_bytes": 2015,
+      "sha256": "40a21367649f8158b317c2598431f245bdb965e72ade750a4193f9e3a52253cc"
+    },
+    "liveact-terminal-clamp-short10.mp4": {
+      "size_bytes": 820070,
+      "sha256": "16767f4f39ca563e069cb2ad3cbe6db4df1028e5474f2a8d422be28b5a93eb9e"
+    },
+    "short-pair-mp4-comparison.json": {
+      "size_bytes": 2301,
+      "sha256": "e2a80c8f5ab13bd54c01eb02ff5a7f69980199c861bed7ebcf75479e2a0b67c9"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[
+  {
+    "prompt": "一个人在说话",
+    "cond_image": "examples/image/2.png",
+    "cond_audio": "docs/benchmarks/artifacts/2026-09-25-terminal-horizon-divergence/liveact-image2-repeat5x2-10s.wav",
+    "output_path": "/tmp/liveact-terminal-audit-long10.mp4"
+  }
+]

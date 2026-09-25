@@ -1,0 +1,8 @@
+[
+  {
+    "prompt": "一个人在说话",
+    "cond_image": "examples/image/2.png",
+    "cond_audio": "docs/benchmarks/artifacts/2026-09-25-two-step-audio-conditioning/liveact-step-audio-first5s.wav",
+    "output_path": "/tmp/liveact-terminal-audit-short5.mp4"
+  }
+]

@@ -1,0 +1,193 @@
+{
+  "method": "actual util_liveact.get_audio_emb on a canonical 720-frame unique-index tensor versus three tiled periods; values are index labels, not Wav2Vec features",
+  "short_embedding_frames": 720,
+  "long_embedding_frames": 2160,
+  "blocks": [
+    {
+      "block_index": 0,
+      "first_output_frame": 0,
+      "audio_start_idx": 0,
+      "audio_end_idx": 53,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 1,
+      "first_output_frame": 21,
+      "audio_start_idx": 0,
+      "audio_end_idx": 53,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 2,
+      "first_output_frame": 53,
+      "audio_start_idx": 32,
+      "audio_end_idx": 85,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 3,
+      "first_output_frame": 85,
+      "audio_start_idx": 64,
+      "audio_end_idx": 117,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 4,
+      "first_output_frame": 117,
+      "audio_start_idx": 96,
+      "audio_end_idx": 149,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 5,
+      "first_output_frame": 149,
+      "audio_start_idx": 128,
+      "audio_end_idx": 181,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 6,
+      "first_output_frame": 181,
+      "audio_start_idx": 160,
+      "audio_end_idx": 213,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 7,
+      "first_output_frame": 213,
+      "audio_start_idx": 192,
+      "audio_end_idx": 245,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 8,
+      "first_output_frame": 245,
+      "audio_start_idx": 224,
+      "audio_end_idx": 277,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 9,
+      "first_output_frame": 277,
+      "audio_start_idx": 256,
+      "audio_end_idx": 309,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 10,
+      "first_output_frame": 309,
+      "audio_start_idx": 288,
+      "audio_end_idx": 341,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 11,
+      "first_output_frame": 341,
+      "audio_start_idx": 320,
+      "audio_end_idx": 373,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 12,
+      "first_output_frame": 373,
+      "audio_start_idx": 352,
+      "audio_end_idx": 405,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 13,
+      "first_output_frame": 405,
+      "audio_start_idx": 384,
+      "audio_end_idx": 437,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 14,
+      "first_output_frame": 437,
+      "audio_start_idx": 416,
+      "audio_end_idx": 469,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 15,
+      "first_output_frame": 469,
+      "audio_start_idx": 448,
+      "audio_end_idx": 501,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 16,
+      "first_output_frame": 501,
+      "audio_start_idx": 480,
+      "audio_end_idx": 533,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 17,
+      "first_output_frame": 533,
+      "audio_start_idx": 512,
+      "audio_end_idx": 565,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 18,
+      "first_output_frame": 565,
+      "audio_start_idx": 544,
+      "audio_end_idx": 597,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 19,
+      "first_output_frame": 597,
+      "audio_start_idx": 576,
+      "audio_end_idx": 629,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 20,
+      "first_output_frame": 629,
+      "audio_start_idx": 608,
+      "audio_end_idx": 661,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 21,
+      "first_output_frame": 661,
+      "audio_start_idx": 640,
+      "audio_end_idx": 693,
+      "window_positions": 265,
+      "different_positions": 0
+    },
+    {
+      "block_index": 22,
+      "first_output_frame": 693,
+      "audio_start_idx": 672,
+      "audio_end_idx": 725,
+      "window_positions": 265,
+      "different_positions": 25
+    }
+  ],
+  "first_window_index_difference_block": 22,
+  "note": "Window-index mismatch establishes differing source frame selection at the 30s endpoint; it does not prove raw model latent or output divergence."
+}
