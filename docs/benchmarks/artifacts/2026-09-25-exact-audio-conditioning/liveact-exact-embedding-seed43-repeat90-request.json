@@ -1,0 +1,8 @@
+[
+  {
+    "prompt": "一个人在说话",
+    "cond_image": "examples/image/2.png",
+    "cond_audio": "/tmp/liveact-image2-repeat30x3-seed43.wav",
+    "output_path": "/tmp/liveact-exact-embedding-seed43-repeat90.mp4"
+  }
+]

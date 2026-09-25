@@ -8,6 +8,7 @@ import gc
 from tqdm import tqdm
 import argparse
 import json
+import hashlib
 import sys
 from pathlib import Path
 
@@ -32,6 +33,7 @@ from fp4_gemm import FP4GemmOptions, enable_fp4_gemm
 from runtime_options import (add_low_memory_arguments, allocate_kv_caches,
                              configure_cudnn_benchmark, maybe_compile)
 from denoising_schedule import denoising_schedule
+from audio_embedding_repeat import repeat_embedding, period_fingerprints, tensor_sha256
 from fp8_cache import load_fp8_cache, save_fp8_cache
 from request_stream import iter_requests, request_key, reset_kv_caches
 from prompt_cache import load_prompt_cache, save_prompt_cache
@@ -143,6 +145,11 @@ def _parse_args():
         action="store_true",
         help="Experiment: condition both two-step DiT forwards on audio; requires --denoising_steps 2.")
     parser.add_argument(
+        "--audio_embedding_repeat_source",
+        type=str,
+        default=None,
+        help="Experiment: tile the exact Wav2Vec features of this WAV to the request's audio length; non-streaming audio only.")
+    parser.add_argument(
         "--fp8_cache_dir",
         type=str,
         default=None,
@@ -222,6 +229,8 @@ def torch_gc():
 def generate(args):
     startup_started = time.perf_counter()
     configure_cudnn_benchmark(args.disable_cudnn_benchmark)
+    if args.audio_embedding_repeat_source and args.steam_audio:
+        raise ValueError("--audio_embedding_repeat_source requires non-streaming audio")
     if args.fp8_cache_dir and not (args.fp8_gemm and args.block_offload):
         raise ValueError("--fp8_cache_dir requires --fp8_gemm and --block_offload")
     if args.build_fp8_cache and not args.fp8_cache_dir:
@@ -467,6 +476,35 @@ def generate(args):
         audio, sr = resample_audio(audio_ori, sr_ori, fps)
         audio_embedding = get_embedding(audio[0], wav2vec_feature_extractor, audio_encoder, device=device)
         audio_len = audio_ori.size(1) / sr_ori
+        if args.audio_embedding_repeat_source:
+            source_path = Path(args.audio_embedding_repeat_source)
+            source_raw, source_rate = torchaudio.load(str(source_path))
+            source_audio, _ = resample_audio(source_raw, source_rate, fps)
+            source_embedding = get_embedding(source_audio[0], wav2vec_feature_extractor,
+                                             audio_encoder, device=device)
+            target_frames = len(audio_embedding)
+            audio_embedding = repeat_embedding(source_embedding, target_frames)
+            fingerprints = period_fingerprints(audio_embedding, len(source_embedding))
+            if (len(set(fingerprints["period_sha256"])) != 1 or
+                    len(set(fingerprints["interior_context_sha256"])) != 1):
+                raise RuntimeError("repeated audio embedding fingerprints differ")
+            audit = {
+                "source_wav": str(source_path.resolve()),
+                "source_wav_sha256": hashlib.sha256(source_path.read_bytes()).hexdigest(),
+                "request_wav": str(Path(audio_path).resolve()),
+                "request_wav_sha256": hashlib.sha256(Path(audio_path).read_bytes()).hexdigest(),
+                "source_embedding_shape": list(source_embedding.shape),
+                "target_embedding_shape": list(audio_embedding.shape),
+                "dtype": str(audio_embedding.dtype),
+                "source_embedding_sha256": tensor_sha256(source_embedding),
+                "fingerprints": fingerprints,
+                "method": "whole request encoded for target length; source WAV separately SoX-tempo/Wav2Vec encoded; source features tiled",
+            }
+            sidecar = Path(out_path).with_suffix(".audio-embedding.json")
+            sidecar.parent.mkdir(parents=True, exist_ok=True)
+            sidecar.write_text(json.dumps(audit, indent=2) + "\n")
+            print(f"Repeated audio embedding: {fingerprints['repeat_count']} periods "
+                  f"of {fingerprints['period_frames']} frames; audit={sidecar}", flush=True)
 
         ref_target_masks = torch.ones(3, height // vae_stride[1], width // vae_stride[2]).to(device, torch.bfloat16)
         frame_num = (sum(blksz_lst) - 1) * 4 + 1

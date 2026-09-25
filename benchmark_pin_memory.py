@@ -40,6 +40,8 @@ def main() -> None:
     parser.add_argument("--denoising-steps", type=int, choices=(2, 3), default=3)
     parser.add_argument("--audio-first-step", action="store_true",
                         help="Condition both two-step DiT forwards on audio.")
+    parser.add_argument("--audio-embedding-repeat-source", type=Path,
+                        help="Tile the Wav2Vec features of this WAV to the request audio length.")
     parser.add_argument("--resident-kv-steps", type=int, choices=(0, 1), default=1)
     parser.add_argument("--disable-cudnn-benchmark", action="store_true",
                         help="Keep cuDNN's algorithm choice stable across independent runs.")
@@ -79,6 +81,8 @@ def main() -> None:
         cmd.append("--disable_cudnn_benchmark")
     if args.audio_first_step:
         cmd.append("--audio_first_step")
+    if args.audio_embedding_repeat_source:
+        cmd.extend(["--audio_embedding_repeat_source", str(args.audio_embedding_repeat_source)])
     env = os.environ.copy()
     env["USE_CHANNELS_LAST_3D"] = "1"
     env["CUDA_VISIBLE_DEVICES"] = "0"

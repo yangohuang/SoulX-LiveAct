@@ -1,0 +1,177 @@
+{
+  "experiment": "2026-09-25-exact-audio-conditioning-horizon",
+  "inputs": {
+    "reference_image": {
+      "path": "examples/image/2.png",
+      "size_bytes": 1936257,
+      "sha256": "7f9c1d2567ca391200b1a76b2e07442111d4472493411b59195f80872d078550"
+    },
+    "source_30s_wav": {
+      "path": "docs/benchmarks/artifacts/2026-09-25-deterministic-step-recheck/liveact-long-horizon-audio2-30s.wav",
+      "size_bytes": 960078,
+      "sha256": "85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e"
+    }
+  },
+  "artifacts": {
+    "liveact-exact-embedding-face.json": {
+      "size_bytes": 15364,
+      "sha256": "672db3958c2213c18c97f99d526675627d16b5920c289899cab93a511d71efe0"
+    },
+    "liveact-exact-embedding-first30-frame-comparison.json": {
+      "size_bytes": 8178,
+      "sha256": "bd5df6ec834de23eeb7176f161474a2ba34c74066f8d125f5db0248d2a78884f"
+    },
+    "liveact-exact-embedding-mouth-15s.png": {
+      "size_bytes": 562435,
+      "sha256": "339af7c04453607bcf146d82eb53c55ad818e4802bcd13539dfd854eed4826e0"
+    },
+    "liveact-exact-embedding-mouth-25s.png": {
+      "size_bytes": 536060,
+      "sha256": "b89fad2d4926a24de60bb26e0d68dac188ea96575ae98c17d52ebc251b63fe69"
+    },
+    "liveact-exact-embedding-mouth-5s.png": {
+      "size_bytes": 565449,
+      "sha256": "568d9ef9c09adc1ec84256920a35307c5fc81af41667f65e642d4f706d0baf84"
+    },
+    "liveact-exact-embedding-seed43-fresh30-contact.png": {
+      "size_bytes": 720491,
+      "sha256": "da8eb812c10c48ebdafa0cc2b1dc1c400b6cbb768662973655e0bf1121e5acf1"
+    },
+    "liveact-exact-embedding-seed43-fresh30-mouth.json": {
+      "size_bytes": 987,
+      "sha256": "e24f18e608d91d16fa3b55d54ec3ca2ae82f3faad2ef783a95cf319bd8956089"
+    },
+    "liveact-exact-embedding-seed43-fresh30-request.json": {
+      "size_bytes": 280,
+      "sha256": "44b6bb56981769e7554d4e23c39a46ba63e07408649f5fd84c378b4241fef868"
+    },
+    "liveact-exact-embedding-seed43-fresh30-resources.json": {
+      "size_bytes": 51823,
+      "sha256": "483938d1bc7b5a8dc40da87ef3e6be2dedfc2520bb7ae1b84bc8647133d97823"
+    },
+    "liveact-exact-embedding-seed43-fresh30-syncnet-crop.avi": {
+      "size_bytes": 2623858,
+      "sha256": "c4a5a156e580410b2c14741cd1bf2539ad279ffbbbc05bfa01fdb54452b79237"
+    },
+    "liveact-exact-embedding-seed43-fresh30-syncnet-distances.npz": {
+      "size_bytes": 79845,
+      "sha256": "4d988b27d78bbb207ebefcbb77563b74fd943e728d3770a87783dd9d32fdf982"
+    },
+    "liveact-exact-embedding-seed43-fresh30-syncnet-pipeline.log.gz": {
+      "size_bytes": 1684,
+      "sha256": "1edcbcf7ced3d9b8d6010791aa2e608f3339f5fba44c8e2f7350880356a8863b"
+    },
+    "liveact-exact-embedding-seed43-fresh30-syncnet-score.log.gz": {
+      "size_bytes": 2080,
+      "sha256": "aa7be131b9412a8e2efa36faae913cb59e2533320f95296f1734a0e5fe97e278"
+    },
+    "liveact-exact-embedding-seed43-fresh30-syncnet.json": {
+      "size_bytes": 1558,
+      "sha256": "344831f270b3a7b782082f7f1101f61ae3fb35a72d85279562a5ae008b1cc320"
+    },
+    "liveact-exact-embedding-seed43-fresh30.audio-embedding.json": {
+      "size_bytes": 1279,
+      "sha256": "fe22d94219bef70061aa15919e03b0ead63cba23c0ccb20473dbaa4205e46e53"
+    },
+    "liveact-exact-embedding-seed43-fresh30.log.gz": {
+      "size_bytes": 2418,
+      "sha256": "a395a71ae8d6d5421b15b6a208f32bb15afe379a96c4009fd2044e2aec29f08b"
+    },
+    "liveact-exact-embedding-seed43-fresh30.mp4": {
+      "size_bytes": 2434813,
+      "sha256": "5124efdbcb70ac10f2ffdeaa50e7cac4a8d7f010c41c4b6da38b0102f1b34645"
+    },
+    "liveact-exact-embedding-seed43-repeat90-contact.png": {
+      "size_bytes": 716837,
+      "sha256": "e05023aed032f3727c28a64ea5a76662bca62c214c71da1025206d3509091c20"
+    },
+    "liveact-exact-embedding-seed43-repeat90-motion.json": {
+      "size_bytes": 73601,
+      "sha256": "e31eed79294a64dd05e1add54a611e0df0fcbd5443d0a32d8029ee330131613a"
+    },
+    "liveact-exact-embedding-seed43-repeat90-mouth.json": {
+      "size_bytes": 1486,
+      "sha256": "206e99f9806256613626d03deebbdecbdf3ed8190bf20f01e5290b418ae73f40"
+    },
+    "liveact-exact-embedding-seed43-repeat90-request.json": {
+      "size_bytes": 223,
+      "sha256": "b0f29b45b361665a0fcbce950e28a6d419b57d3217b37e30b5db41f74b6b045f"
+    },
+    "liveact-exact-embedding-seed43-repeat90-resources.json": {
+      "size_bytes": 138600,
+      "sha256": "cd6301d72710704c7cf072a1a24153e1088b68dff20ce5ec4b68256642c3c425"
+    },
+    "liveact-exact-embedding-seed43-repeat90-syncnet-crop.avi": {
+      "size_bytes": 7842612,
+      "sha256": "a54b0fb3756b35f1ebc29a77f4ea56726e9f7a43b911b8ef3a205a9728d081a7"
+    },
+    "liveact-exact-embedding-seed43-repeat90-syncnet-distances.npz": {
+      "size_bytes": 240988,
+      "sha256": "9b527ee75933c3b40bee04d02bcff1f8fda71b79fc7e44657d1652e2dbce6beb"
+    },
+    "liveact-exact-embedding-seed43-repeat90-syncnet-pipeline.log.gz": {
+      "size_bytes": 3161,
+      "sha256": "043b6ed7137ee6fdfbb5271a28cea21b35cfcd69530f7e935cf011a17f9fc9e3"
+    },
+    "liveact-exact-embedding-seed43-repeat90-syncnet-score.log.gz": {
+      "size_bytes": 644,
+      "sha256": "8a23a8170074f499f2ef706a85e70a364463c087cea91f3469af77586482d17a"
+    },
+    "liveact-exact-embedding-seed43-repeat90-syncnet.json": {
+      "size_bytes": 2507,
+      "sha256": "908d62dd7bbc123df6c0f1707fed095eceed76de7de41d71f5994626ee10cc8f"
+    },
+    "liveact-exact-embedding-seed43-repeat90-trend.json": {
+      "size_bytes": 1516,
+      "sha256": "9c6283e5819600dba02f2f946eebb52719c8eeb90280713d1312d8cd50d46ab9"
+    },
+    "liveact-exact-embedding-seed43-repeat90-trend.png": {
+      "size_bytes": 316053,
+      "sha256": "2619572dc64dafab84afe598c62b258154f6bc89647b6488ae05dc4075efe0ba"
+    },
+    "liveact-exact-embedding-seed43-repeat90-worst-windows.png": {
+      "size_bytes": 1768812,
+      "sha256": "696d1da15611db2233978f6a9ecda70e6c3a3ece66878bc22109d9c6ccf3bf90"
+    },
+    "liveact-exact-embedding-seed43-repeat90.audio-embedding.json": {
+      "size_bytes": 1455,
+      "sha256": "11d1e651ac54b718e1f820273e2e70ecb8286b96c653aeb5759553f6a131af17"
+    },
+    "liveact-exact-embedding-seed43-repeat90.log.gz": {
+      "size_bytes": 2727,
+      "sha256": "e13b7cfdb790aae13586affe1d4221fe4f4413e89d65f546355d945da7764326"
+    },
+    "liveact-exact-embedding-seed43-repeat90.mp4": {
+      "size_bytes": 7302833,
+      "sha256": "51391a6cdda131ac120ade069504d57f441d170fa97be69174d1b18da2c4366b"
+    },
+    "liveact-exact-embedding-smoke-contact.png": {
+      "size_bytes": 1025553,
+      "sha256": "d53dd9b0136537fa48a7e600f9a49cdbb3ee6f851807b3ed07cc68ea831c8b0f"
+    },
+    "liveact-exact-embedding-smoke-request.json": {
+      "size_bytes": 267,
+      "sha256": "4a52e98265efb3404609588a6a495baa6b3eea1b0ffe43b847570dc956146d31"
+    },
+    "liveact-exact-embedding-smoke-resources.json": {
+      "size_bytes": 10234,
+      "sha256": "a5d8396cfa3178d0c24b933887ac8023152ce8dabcbe1231a8001028ecabd859"
+    },
+    "liveact-exact-embedding-smoke.audio-embedding.json": {
+      "size_bytes": 1271,
+      "sha256": "2964c3aa518190f13a2141a2e6e1f129bace2f56321a04eba9b55d9f9f9ef705"
+    },
+    "liveact-exact-embedding-smoke.log.gz": {
+      "size_bytes": 1939,
+      "sha256": "e71795986573d10a92b50de8da4746265f7cc8db6be815a2df8090a5e9927326"
+    },
+    "liveact-exact-embedding-smoke.mp4": {
+      "size_bytes": 399797,
+      "sha256": "9b177bfd9869110ac9e19546bab967ded1d3ce4833ee0fb53edb757767b63997"
+    },
+    "liveact-image2-repeat30x3-seed43.wav": {
+      "size_bytes": 2880044,
+      "sha256": "2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0"
+    }
+  }
+}

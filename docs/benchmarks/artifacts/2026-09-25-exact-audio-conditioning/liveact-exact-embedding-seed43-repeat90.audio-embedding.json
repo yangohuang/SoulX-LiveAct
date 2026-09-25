@@ -1,0 +1,35 @@
+{
+  "source_wav": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/2026-09-25-deterministic-step-recheck/liveact-long-horizon-audio2-30s.wav",
+  "source_wav_sha256": "85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e",
+  "request_wav": "/tmp/liveact-image2-repeat30x3-seed43.wav",
+  "request_wav_sha256": "2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0",
+  "source_embedding_shape": [
+    720,
+    12,
+    768
+  ],
+  "target_embedding_shape": [
+    2160,
+    12,
+    768
+  ],
+  "dtype": "torch.bfloat16",
+  "source_embedding_sha256": "6f6efa014b8cde63ebf475a7e84cb4c47d87f198b1dd117bbd653d6c6c7c8be0",
+  "fingerprints": {
+    "period_frames": 720,
+    "repeat_count": 3,
+    "interior_margin_frames": 48,
+    "context_radius_frames": 2,
+    "period_sha256": [
+      "6f6efa014b8cde63ebf475a7e84cb4c47d87f198b1dd117bbd653d6c6c7c8be0",
+      "6f6efa014b8cde63ebf475a7e84cb4c47d87f198b1dd117bbd653d6c6c7c8be0",
+      "6f6efa014b8cde63ebf475a7e84cb4c47d87f198b1dd117bbd653d6c6c7c8be0"
+    ],
+    "interior_context_sha256": [
+      "f31b20165c7eddfea2801fc74ac4a4964b2509c179cb19e06ef2ac088ff72be3",
+      "f31b20165c7eddfea2801fc74ac4a4964b2509c179cb19e06ef2ac088ff72be3",
+      "f31b20165c7eddfea2801fc74ac4a4964b2509c179cb19e06ef2ac088ff72be3"
+    ]
+  },
+  "method": "whole request encoded for target length; source WAV separately SoX-tempo/Wav2Vec encoded; source features tiled"
+}

@@ -1,0 +1,78 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "docs/benchmarks/artifacts/2026-09-25-exact-audio-conditioning/liveact-exact-embedding-seed43-repeat90.mp4",
+  "source_sha256": "51391a6cdda131ac120ade069504d57f441d170fa97be69174d1b18da2c4366b",
+  "crop": "docs/benchmarks/artifacts/2026-09-25-exact-audio-conditioning/liveact-exact-embedding-seed43-repeat90-syncnet-crop.avi",
+  "crop_sha256": "a54b0fb3756b35f1ebc29a77f4ea56726e9f7a43b911b8ef3a205a9728d081a7",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "docs/benchmarks/artifacts/2026-09-25-exact-audio-conditioning/liveact-exact-embedding-seed43-repeat90-syncnet-distances.npz",
+  "distance_matrix_sha256": "9b527ee75933c3b40bee04d02bcff1f8fda71b79fc7e44657d1652e2dbce6beb",
+  "distance_matrix_shape": [
+    2248,
+    31
+  ],
+  "full": {
+    "windows": 2248,
+    "best_offset_25fps_frames": -2,
+    "min_distance": 8.153215408325195,
+    "confidence": 6.890704154968262
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 0.0,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.092597961425781,
+      "confidence": 6.938179016113281
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "edge_margin_seconds": 0.0,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.137750625610352,
+      "confidence": 6.886137008666992
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "edge_margin_seconds": 0.0,
+      "windows": 748,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.229486465454102,
+      "confidence": 6.749654769897461
+    }
+  ],
+  "interior_segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 2.0,
+      "windows": 650,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.053655624389648,
+      "confidence": 6.960016250610352
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "edge_margin_seconds": 2.0,
+      "windows": 650,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.165443420410156,
+      "confidence": 6.816147804260254
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "edge_margin_seconds": 2.0,
+      "windows": 648,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.256807327270508,
+      "confidence": 6.701361656188965
+    }
+  ]
+}
