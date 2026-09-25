@@ -1,0 +1,8 @@
+[
+  {
+    "prompt": "一个人在说话",
+    "cond_image": "examples/image/2.png",
+    "cond_audio": "/tmp/liveact-long-horizon-audio2-30s.wav",
+    "output_path": "/tmp/liveact-deterministic-steps-image2-seed44-two.mp4"
+  }
+]
