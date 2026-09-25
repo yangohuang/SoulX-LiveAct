@@ -1,0 +1,31 @@
+{
+  "identity": 3,
+  "pipeline": "joonson/syncnet_python local run_pipeline.py and run_syncnet.py; S3FD face crop at 25 FPS",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "source_duration_discrepancy": "Both source MP4s have 722 video frames at 24 FPS and 30.000 s audio. Baseline container duration 30.209 s versus anchor 30.084 s caused run_pipeline.py to convert to 757 versus 754 face-track frames.",
+  "matched_endpoint": "Trim only the baseline pipeline face crop with ffmpeg -i pycrop/image3-baseline/00000.avi -t 30.16 -c copy pycrop/image3-baseline-trim754/00000.avi; rerun run_syncnet.py with reference image3-baseline-trim754. The anchor crop is unchanged. Both face crops have 754 frames and 481536 audio samples.",
+  "videos": {
+    "baseline": {
+      "source": "docs/benchmarks/artifacts/videos/image3-baseline-30s.mp4",
+      "source_sha256": "da4b93e3e7837c9650dbcabaea21b305af162b48359e3821a6f1fe3787829a67",
+      "raw_crop_sha256": "027a7b46170b6a572bdb537e7f46ffb51e0f1d21e233e644007645666f011c60",
+      "matched_crop_sha256": "4d65df34c0b0df2645f7e56c6a95b1c8526d959fcb92af66a7ae67a6b305fbe7",
+      "matched_face_crop_frames": 754,
+      "matched_crop_audio_samples": 481536,
+      "best_offset_25fps_frames": -1,
+      "min_distance": 8.283,
+      "confidence": 5.586
+    },
+    "anchor045": {
+      "source": "docs/benchmarks/artifacts/videos/image3-anchor045-30s.mp4",
+      "source_sha256": "3ff5a9cd7657808b4c7351f6c3a94cd6deed9d648c60fd86e43acf5232908f0e",
+      "raw_crop_sha256": "d60dbc64c401b86062bbf0b0974e8ef79459d52d5d8f9290113c3f40e9845d09",
+      "matched_crop_sha256": "d60dbc64c401b86062bbf0b0974e8ef79459d52d5d8f9290113c3f40e9845d09",
+      "matched_face_crop_frames": 754,
+      "matched_crop_audio_samples": 481536,
+      "best_offset_25fps_frames": -1,
+      "min_distance": 8.365,
+      "confidence": 5.385
+    }
+  }
+}

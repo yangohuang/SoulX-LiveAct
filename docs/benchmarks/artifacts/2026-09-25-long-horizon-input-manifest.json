@@ -1,0 +1,35 @@
+{
+  "prompt": "一个人在说话",
+  "output": "416x720, 24fps, 722 frames, 3 denoising steps",
+  "sampling": "separate runs; same seed within each identity",
+  "identities": {
+    "1": {
+      "reference_image": "examples/image/1.png",
+      "reference_image_sha256": "83f745e79892daf682857aaaf182a9f20748c0f4ffbf03fb527c0ffcf73b76d4",
+      "source_audio": "examples/audio/1.wav",
+      "source_audio_sha256": "e0915f518f31ed374943f5c2a2d097d2cdb0704a43849670e9827ea5773d9e26",
+      "seed": 42,
+      "audio_segment": "first 30 seconds of source WAV (per 2026-09-24-liveact-motion-continuity.md; exact temporary trim file not retained)"
+    },
+    "2": {
+      "reference_image": "examples/image/2.png",
+      "reference_image_sha256": "7f9c1d2567ca391200b1a76b2e07442111d4472493411b59195f80872d078550",
+      "source_audio": "examples/audio/2.wav",
+      "source_audio_sha256": "bd6140c4576acbe23dd809f7444f85a752be42a709a59969812209e5ffc049b8",
+      "seed": 42,
+      "trimmed_audio_sha256": "85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e",
+      "trimmed_audio_contract": "first 30.000 s, PCM s16le, 16000 Hz; channels preserved",
+      "trimmed_audio_channels": 1
+    },
+    "3": {
+      "reference_image": "examples/image/3.png",
+      "reference_image_sha256": "a995cd1668b0041829a25cec0ffa5da25e81089d9e6e0c1e5d97c5c056228519",
+      "source_audio": "examples/audio/3.wav",
+      "source_audio_sha256": "bf0d7f881414491601c50f42eb1e457f044a3a0a5b76adf41c833934ed66f0f8",
+      "seed": 42,
+      "trimmed_audio_sha256": "f13c7a82a2cfbe0e9345f2aedd4cdcd3d7905d6d5c5c596e7fe9a8c94c426370",
+      "trimmed_audio_contract": "first 30.000 s, PCM s16le, 16000 Hz; channels preserved",
+      "trimmed_audio_channels": 2
+    }
+  }
+}
