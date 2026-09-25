@@ -16,7 +16,7 @@ The first video has 21 decoded frames; each later chunk adds 32. Therefore the c
 
 For every boundary, record (a) immediate transition, (b) maximum change among the first eight transitions and its offset, and (c) total change over those eight transitions. Summarize the 22 boundary windows overall and by early/middle/late thirds. If the immediate transition falls but the maximum remains or moves later, label the pattern **displacement**, not a continuity improvement. If total change falls without a reference motion trajectory, label it **possible motion suppression**, not improvement. The within-chunk transition distribution is context, not a ground-truth target.
 
-Keep identity and audio alignment separate: the first CPU metric does not measure either. Reuse the existing same-pipeline 30-second SyncNet comparison as an independent lip-sync guardrail, and mark identity drift unmeasured until a validated face-embedding pipeline and more identities are available. Include frame samples around the largest event for human review. Report wall time/FPS from existing logs as inference cost, without implying real-time performance.
+Keep identity and audio alignment separate: the first CPU frame-change metric does not measure either. Reuse the existing same-pipeline 30-second SyncNet comparison as an independent lip-sync guardrail. A separate local InsightFace face-reference curve may be recorded with detector coverage, but remains a proxy until multiple identities and visual checks are available. Include frame samples around the largest event for human review. Report wall time/FPS from existing logs as inference cost, without implying real-time performance.
 
 ## Deliverables and decision
 

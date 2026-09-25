@@ -32,13 +32,34 @@ Relative to baseline, anchor 0.25 reduces the mean window peak by 26.3% and summ
 
 The lower summed window motion also raises a **motion-suppression or trajectory-change hypothesis**. The average change *outside* these boundary windows is 1.642, 1.640 and 1.687 for baseline, 0.25 and 0.45, respectively. That does not indicate global freezing, but it cannot establish that the hand completed the same natural motion. The [existing side-by-side 30-second review](artifacts/videos/baseline-left-anchor045-right-30s.mp4) and key frames must be judged for gesture timing and plausibility; frame MAE alone cannot do that. Early/middle/late mean window peaks are 4.151/4.643/3.594 for baseline, 3.247/3.477/2.384 for 0.25, and 3.127/2.690/2.287 for 0.45. A single 30-second sample cannot estimate an hour-scale error slope.
 
-The previous [same-pipeline SyncNet evaluation](2026-09-24-liveact-motion-continuity.md) gives baseline/0.25/0.45 minimum embedding distance **7.672/7.657/7.989** (lower preferred) and relative confidence **7.079/7.012/6.599** (higher preferred). The stronger anchor therefore has an unfavorable lip-sync signal even as the motion-change proxy falls. These are relative scores after 25-FPS conversion, not absolute lip delay or a perceptual listening test. Identity drift is **unmeasured**: this pilot has no validated identity-embedding time series and only one identity. Existing inference logs put later chunks near 19 seconds for 32 output frames for all three arms, so none is real-time on this 4090; these are separate runs rather than a kernel benchmark.
+The previous [same-pipeline SyncNet evaluation](2026-09-24-liveact-motion-continuity.md) gives baseline/0.25/0.45 minimum embedding distance **7.672/7.657/7.989** (lower preferred) and relative confidence **7.079/7.012/6.599** (higher preferred). The stronger anchor therefore has an unfavorable lip-sync signal even as the motion-change proxy falls. These are relative scores after 25-FPS conversion, not absolute lip delay or a perceptual listening test. Existing inference logs put later chunks near 19 seconds for 32 output frames for all three arms, so none is real-time on this 4090; these are separate runs rather than a kernel benchmark.
+
+### Face-reference consistency is a separate, noisy proxy
+
+[`face_identity_stability.py`](../../face_identity_stability.py) uses a local InsightFace buffalo_l detector and recognition model on CPU, sampling frame indices 0, 24, …, 720 (31 samples). Its weights are **not** included in this repository, and no biometric embeddings are saved. The [31-point JSON](artifacts/2026-09-25-face-identity-image1.json) records SHA-256 hashes for the reference, both model files and source MP4s; the [timeline](artifacts/2026-09-25-face-identity-image1.png) plots cosine similarity to the supplied reference image. Frames with zero or multiple detected faces are excluded and counted, and an early/late coverage below 90% blocks interpretation. Here every arm has exactly one detected face in all 31 samples, with minimum detection score 0.777, so the first-generated-face anchor is frame 0. The detector sometimes places the left edge of the face box outside the image, which is another reason to treat this as a proxy.
+
+| Arm | Mean reference cosine | 10th percentile | First-third mean | Last-third mean | Final sample |
+|---|---:|---:|---:|---:|---:|
+| Baseline | 0.734 | 0.624 | 0.761 | 0.705 | 0.777 |
+| Anchor 0.25 | 0.728 | 0.636 | 0.768 | 0.695 | 0.786 |
+| Anchor 0.45 | 0.724 | 0.624 | 0.763 | 0.691 | 0.781 |
+
+All three traces have large second-to-second excursions and rebound near the final sample. The lower last-third means do **not** demonstrate permanent identity drift, and no anchor has a clear identity advantage on one identity/seed. Expression, pose and crop changes can affect face embeddings. This is now an instrumented identity-consistency pilot, not a validated long-video identity benchmark.
+
+```bash
+OMP_NUM_THREADS=1 /home/yg/miniforge3/envs/latentsync/bin/python face_identity_stability.py \
+  --reference examples/image/1.png \
+  --video baseline docs/benchmarks/artifacts/videos/baseline-30s.mp4 \
+  --video anchor025 docs/benchmarks/artifacts/videos/anchor-025-30s.mp4 \
+  --video anchor045 docs/benchmarks/artifacts/videos/anchor-045-30s.mp4 \
+  --output docs/benchmarks/artifacts/2026-09-25-face-identity-image1.json
+```
 
 A CPU MediaPipe Pose spot check at frames 0, 100, 250, 370–378, 400, 600 and 720 could not validate hand kinematics: both wrist landmarks were largely outside the visible frame (`y > 1` or `x < 0`) and wrist visibility was about 0.01–0.07. Those coordinates are excluded from the score rather than interpreted as physical motion. Gesture timing therefore still needs visual review or a fit-for-purpose arm/hand tracker on suitable framing.
 
 ## What this study establishes
 
-It establishes a reproducible way to reject a misleading one-number claim: temporal stability must consider delayed spikes, total motion, visual action timing and independent lip-sync/identity checks. On this single sample, anchors lower several image-change metrics, but the stronger option does not pass a multi-objective quality gate because its lip-sync proxy worsens and natural gesture quality is unresolved. It does **not** establish a general algorithmic improvement, physical consistency, long-form identity preservation, or a LiveAct model repair.
+It establishes a reproducible way to reject a misleading one-number claim: temporal stability must consider delayed spikes, total motion, visual action timing and independent lip-sync/identity checks. On this single sample, anchors lower several image-change metrics, but the stronger option does not pass a multi-objective quality gate because its lip-sync proxy worsens and natural gesture quality is unresolved. The face-reference curve supplies no clear identity advantage. It does **not** establish a general algorithmic improvement, physical consistency, long-form identity preservation, or a LiveAct model repair.
 
 ## Cross-identity extension protocol, fixed before reading new outputs
 

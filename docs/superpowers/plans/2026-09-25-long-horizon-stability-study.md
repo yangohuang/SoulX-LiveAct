@@ -35,3 +35,12 @@
 - [x] Write the early/middle/late comparison, delayed-spike check, lip-sync tradeoff, and limitations.
 - [x] Link the existing visual samples and document the replication gate: three identities, two seeds, same audio/prompt settings, and explicit identity metric before any improvement claim.
 - [x] Run focused and full tests (48 passing with GPU access), JSON content checks and `git diff --check`; commit and sync only the personal fork.
+
+### Task 4: Separate face-reference proxy
+
+**Files:** `face_identity_stability.py`, `tests/test_face_identity_stability.py`, `docs/benchmarks/artifacts/2026-09-25-face-identity-image1.json`, `docs/benchmarks/2026-09-25-long-horizon-stability-study.md`
+
+- [x] Write and observe failing tests for embedding cosine, missing detections and zero vectors.
+- [x] Implement CPU-only one-frame-per-second extraction using local InsightFace buffalo_l; save only scores, never face embeddings.
+- [x] Run the same reference-image protocol across all three 30-second videos, record detector coverage and the full cosine timeline.
+- [x] Re-run focused/full tests (52 passing) and verify the report keeps pose/expression/crop limitations explicit; commit and sync the result to the personal fork.
