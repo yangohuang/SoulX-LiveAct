@@ -1,0 +1,83 @@
+{
+  "period_seconds": 5,
+  "repeat_count": 1,
+  "fps": 24,
+  "first_block_output_frames": 21,
+  "later_block_output_frames": 32,
+  "audio_window_center_frames": 53,
+  "audio_context_radius_frames": 2,
+  "period_frames": 120,
+  "audio_frames": 120,
+  "block_count": 4,
+  "period_start_phase_mod_32": [
+    0
+  ],
+  "period_boundaries": [],
+  "predicted_pre_encoder_frames": 117,
+  "blocks": [
+    {
+      "block_index": 0,
+      "output_first_frame": 0,
+      "output_last_frame": 20,
+      "audio_start_idx": 0,
+      "audio_end_idx_exclusive": 53,
+      "audio_first_unclamped": -2,
+      "audio_last_unclamped": 54,
+      "audio_first_clamped": 0,
+      "audio_last_clamped": 54,
+      "audio_window_positions": 265,
+      "clamped_window_positions": 3,
+      "streaming_audio_slice_end_exclusive": 55,
+      "audio_slice_lead_from_first_output_seconds": 2.2916666666666665,
+      "audio_slice_lead_from_last_output_seconds": 1.4583333333333333
+    },
+    {
+      "block_index": 1,
+      "output_first_frame": 21,
+      "output_last_frame": 52,
+      "audio_start_idx": 0,
+      "audio_end_idx_exclusive": 53,
+      "audio_first_unclamped": -2,
+      "audio_last_unclamped": 54,
+      "audio_first_clamped": 0,
+      "audio_last_clamped": 54,
+      "audio_window_positions": 265,
+      "clamped_window_positions": 3,
+      "streaming_audio_slice_end_exclusive": 55,
+      "audio_slice_lead_from_first_output_seconds": 1.4166666666666667,
+      "audio_slice_lead_from_last_output_seconds": 0.125
+    },
+    {
+      "block_index": 2,
+      "output_first_frame": 53,
+      "output_last_frame": 84,
+      "audio_start_idx": 32,
+      "audio_end_idx_exclusive": 85,
+      "audio_first_unclamped": 30,
+      "audio_last_unclamped": 86,
+      "audio_first_clamped": 30,
+      "audio_last_clamped": 86,
+      "audio_window_positions": 265,
+      "clamped_window_positions": 0,
+      "streaming_audio_slice_end_exclusive": 87,
+      "audio_slice_lead_from_first_output_seconds": 1.4166666666666667,
+      "audio_slice_lead_from_last_output_seconds": 0.125
+    },
+    {
+      "block_index": 3,
+      "output_first_frame": 85,
+      "output_last_frame": 116,
+      "audio_start_idx": 64,
+      "audio_end_idx_exclusive": 117,
+      "audio_first_unclamped": 62,
+      "audio_last_unclamped": 118,
+      "audio_first_clamped": 62,
+      "audio_last_clamped": 118,
+      "audio_window_positions": 265,
+      "clamped_window_positions": 0,
+      "streaming_audio_slice_end_exclusive": 119,
+      "audio_slice_lead_from_first_output_seconds": 1.4166666666666667,
+      "audio_slice_lead_from_last_output_seconds": 0.125
+    }
+  ]
+}

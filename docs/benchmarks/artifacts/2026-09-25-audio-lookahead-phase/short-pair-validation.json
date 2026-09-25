@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "pair": "5-vs-10",
+      "predicted_first_different_audio_window_block": null,
+      "observed_first_different_audio_window_hash_block": null,
+      "predicted_pre_encoder_frames": [
+        117,
+        245
+      ],
+      "observed_pre_encoder_frames": [
+        117,
+        245
+      ]
+    },
+    {
+      "pair": "10-vs-20",
+      "predicted_first_different_audio_window_block": 7,
+      "observed_first_different_audio_window_hash_block": 7,
+      "predicted_pre_encoder_frames": [
+        245,
+        501
+      ],
+      "observed_pre_encoder_frames": [
+        245,
+        501
+      ]
+    }
+  ],
+  "result": "all predictions matched archived opt-in GPU audits"
+}
