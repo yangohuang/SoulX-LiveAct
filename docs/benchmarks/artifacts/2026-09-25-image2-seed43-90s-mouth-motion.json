@@ -1,0 +1,50 @@
+{
+  "source": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-90s.mp4",
+  "source_sha256": "5464eb4f3b6d8066fac9dbc709062b4dcc158d90bcc2558983b9597906667bd8",
+  "crop": "/tmp/liveact-horizon-syncnet/pycrop/image2_seed43_90s/00000.avi",
+  "crop_sha256": "620eeedbf467e7e317bc2311568cf9e02542f101d36d4c60a127755e4f7733ca",
+  "crop_frames": 2257,
+  "crop_fps": 25,
+  "mouth_box_xyxy": [
+    60,
+    90,
+    160,
+    150
+  ],
+  "upper_box_xyxy": [
+    60,
+    30,
+    160,
+    90
+  ],
+  "limitation": "fixed crop ROIs include expression, jaw/head motion and tracker error; not a phoneme-aligned lip score",
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "transitions": 749,
+      "mouth_mean": 6.08155251446373,
+      "mouth_median": 5.522333333333333,
+      "upper_mean": 6.183100578549176,
+      "mouth_minus_upper_mean": -0.10154806408544727
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "transitions": 749,
+      "mouth_mean": 6.4967643524699605,
+      "mouth_median": 6.0665,
+      "upper_mean": 6.791136181575434,
+      "mouth_minus_upper_mean": -0.29437182910547394
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "transitions": 749,
+      "mouth_mean": 6.3341570983533595,
+      "mouth_median": 5.928833333333333,
+      "upper_mean": 6.337907432131732,
+      "mouth_minus_upper_mean": -0.0037503337783711677
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+# Repeated speech versus long causal history
+
+The [90-second unanchored baseline](2026-09-25-90s-causal-stability-baseline.md) showed a declining SyncNet proxy across three different speech periods while movement/face-proxy screens did not deteriorate. This experiment repeats **one exact 30-second PCM speech segment three times** in a single causal rollout to reduce content variation. Its [prospective gate](../superpowers/specs/2026-09-25-repeat-speech-history-test.md) requires both full-period and 2-second-edge-trimmed lip scores, stable offset, a same-audio fresh-history control, movement/face coverage, visual review, and an audit of the actual Wav2Vec conditioning before calling any trend history-related.
+
+## Frozen input and control
+
+The original `examples/audio/2.wav` was previously trimmed to `/tmp/liveact-long-horizon-audio2-30s.wav`: 480,000 mono PCM16 samples at 16 kHz, SHA-256 `85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e`. Those raw sample bytes were concatenated three times, without gaps or crossfades, into a 90-second PCM16 WAV (SHA-256 `2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0`); all three raw segments were checked bit-for-bit equal. The [input manifest](artifacts/2026-09-25-repeat-speech-input-manifest.json) records both videos and hashes. Identity 2, seed 43, prompt `一个人在说话`, 416×720, 24 FPS, three denoising steps, FP8 GEMM/KV, block/cache offload, one resident KV step and no latent anchor match the earlier baseline. The repeated request JSON SHA-256 is `346940cc332c15a349d6e6a0eb0a48bfff22b2eeb0a35c697a8af73de419a1ad`.
+
+The existing [independent 30-second baseline](artifacts/videos/image2-baseline-seed43-30s.mp4) is a fresh-history control: its [archived input manifest](artifacts/2026-09-25-seed43-input-manifest.json) records the *same exact PCM WAV hash*, reference image, seed and inference settings. It has 722 frames and source MP4 SHA-256 `74764fdb5613059a790e7bfccf8a6aa2ffdd1dea53187c41c160d2daf24107dd`. A new run of the same local SyncNet pipeline gives full-window confidence **6.971**, best offset −2 converted frames and 2-second-trimmed confidence **6.949**; the [recomputed score JSON](artifacts/2026-09-25-image2-fresh30-repeat-control-syncnet.json) and [distance matrix](artifacts/2026-09-25-image2-fresh30-repeat-control-syncnet-distances.npz) allow verification. The prior matched-crop score was 6.955; the 0.016 difference is consistent with the different crop-endpoint handling. The [fixed-ROI mouth-motion record](artifacts/2026-09-25-image2-fresh30-repeat-control-mouth.json) is a coarse movement proxy; [5-second](artifacts/2026-09-25-image2-fresh30-mouth-5s.png) and [15-second](artifacts/2026-09-25-image2-fresh30-mouth-15s.png) eight-frame mouth strips support visual matching.
+
+Raw PCM equality does **not** imply model-conditioning equality: LiveAct applies SoX `tempo=25/24` to the full input and then runs Wav2Vec over the full processed sequence. An early audit of the post-SoX waveform found only about 0.28–0.30 normalized cross-correlation in a sampled repeated interval after a few milliseconds of lag. The Wav2Vec feature audit therefore gates the history interpretation below.
+
+## The model input was not actually matched
+
+The [audio-conditioning audit](artifacts/2026-09-25-image2-repeat90-conditioning-audit.json) reruns the exact BF16 CUDA Wav2Vec path used by `generate.py`: whole-WAV SoX tempo, 16-kHz resampling, amplitude multiplication, `get_embedding`, and all 12 hidden-state layers. It compares 624 interior frames per 30-second period after excluding two seconds from each edge. The repeated long-run periods have shape 2160×12×768, versus 720×12×768 for the fresh control.
+
+| Conditioning comparison, interior | Mean frame cosine | 10th-percentile cosine | Normalized MAE |
+|---|---:|---:|---:|
+| Repeat period 2 versus period 1 | **0.943** | 0.884 | 0.303 |
+| Repeat period 3 versus period 1 | **0.950** | 0.897 | 0.275 |
+| Fresh 30-second control versus repeat period 1 | 0.993 | 0.992 | 0.113 |
+
+The two late repeated periods fail the predeclared **mean ≥0.99 and P10 ≥0.95** condition-matching rule. Repeating raw speech therefore does not isolate generated history in this implementation. The fresh control is much closer to the long-run first period, but its normalized error is not zero. No latent-history causal claim is made from the generated results below.
+
+## Long-run scores and visual review
+
+The [playable repeated-speech video](artifacts/videos/image2-repeat30x3-seed43-90s.mp4) decodes to 2162 frames, with 90.083-second video and 90.000-second audio streams. SHA-256: `c731c30b33c1a42397dbf3f262f39527d5aa7633431eb5d6d4bc1f1eeea4d4a7`. The [generation runtime record](artifacts/2026-09-25-image2-repeat90-runtime.json) gives 68 blocks, median block cost 19.059 seconds, sampled GPU-memory maximum 16,276 MiB, and block-time-only throughput **1.665 generated FPS**. It is not realtime.
+
+The [motion](artifacts/2026-09-25-image2-repeat90-motion.json), [segment trend](artifacts/2026-09-25-image2-repeat90-trend.json), [face](artifacts/2026-09-25-image2-repeat90-face.json), [time chart](artifacts/2026-09-25-image2-repeat90-trend.png), [seven-timepoint contact sheet](artifacts/2026-09-25-image2-repeat90-contact.png) and [three high-peak eight-frame windows](artifacts/2026-09-25-image2-repeat90-worst-windows.png) preserve the visual and numerical context.
+
+| Period | Complete boundary windows | Median eight-transition peak | Mean eight-transition motion sum | SyncNet full / 2-s-edge-trimmed confidence | Lower-face temporal MAE |
+|---|---:|---:|---:|---:|---:|
+| 0–30 s | 22 | 4.950 | 31.450 | **6.992 / 6.953** | 6.158 |
+| 30–60 s | 23 | 6.734 | 41.700 | 6.842 / 6.680 | 6.400 |
+| 60–90 s | 22 | 5.918 | 33.349 | **6.792 / 6.695** | 6.143 |
+
+The [SyncNet JSON](artifacts/2026-09-25-image2-repeat90-syncnet.json) and compressed [31-shift distance matrix](artifacts/2026-09-25-image2-repeat90-syncnet-distances.npz) have 750/750/748 scored full-period windows and 650/650/648 interior windows, with −2-frame best offset in every bin. The full-period late–early decrease is **0.199**, and the edge-trimmed decrease is **0.258**: neither reaches the preregistered **0.5** threshold. The fresh-history control is within 0.021 of the long-run early full score and within 0.004 of its interior score. The continuous crop has 2257 converted video frames and 1,442,304 decoded 16-kHz audio samples; SyncNet scores their common supported windows.
+
+The late/early boundary-peak median ratio is **1.196**, below the 1.25 screen; the local motion-sum ratio is **1.060**, so no motion collapse explains a stable lip score. Once-per-second single-face detection is **91/91**; equal 30-sample-bin reference-face cosines are 0.6980/0.6815/0.6981, without a late decline. The [fixed mouth-ROI proxy](artifacts/2026-09-25-image2-repeat90-mouth-motion.json) changes little from first to last period (6.158→6.143), though it measures image variation, not phoneme alignment. For comparison, the earlier [different-speech 90-second clip's mouth-ROI proxy](artifacts/2026-09-25-image2-seed43-90s-mouth-motion.json) was 6.082/6.497/6.334, so its falling SyncNet confidence did not coincide with a collapse in coarse mouth motion either. Matched within-period [5-second](artifacts/2026-09-25-image2-repeat90-mouth-5s.png), [15-second](artifacts/2026-09-25-image2-repeat90-mouth-15s.png) and [25-second](artifacts/2026-09-25-image2-repeat90-mouth-25s.png) eight-frame strips do not show an obvious late loss of lip motion or a new gross artifact; pose and stochastic rendering still differ between periods.
+
+**Decision: stop before seed 44 or an exact-embedding intervention.** The two primary SyncNet decreases are too small and the actual audio conditions fail the matching rule; the visual/motion/face checks provide no clear late failure to pursue. The earlier 90-second clip's 7.122→6.413 decline should remain an **unexplained content-dependent proxy trend**, not a claim of long-history accumulation. Exact audio-embedding repetition would be the proper next experiment only if a stronger, replicated lip-failure case appears. This is a controlled negative result and a useful lesson about auditing *model conditioning*, not a quality-improvement PR candidate.

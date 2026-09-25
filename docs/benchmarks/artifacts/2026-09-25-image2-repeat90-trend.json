@@ -1,0 +1,45 @@
+{
+  "fps": 24,
+  "segment_seconds": 30,
+  "severe_threshold_early_p95": 9.732270299145299,
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "count": 22,
+      "median_peak": 4.949626068376068,
+      "mean_peak": 6.019830516705516,
+      "mean_immediate": 4.150866841491841,
+      "mean_motion_sum": 31.450315656565657,
+      "severe_count": 2
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "count": 23,
+      "median_peak": 6.734081196581196,
+      "mean_peak": 7.318287811222594,
+      "mean_immediate": 4.808396042363434,
+      "mean_motion_sum": 41.69979096989967,
+      "severe_count": 6
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "count": 22,
+      "median_peak": 5.918082264957265,
+      "mean_peak": 6.296938131313132,
+      "mean_immediate": 4.613803904428904,
+      "mean_motion_sum": 33.34876165501166,
+      "severe_count": 3
+    }
+  ],
+  "late_to_early_median_peak_ratio": 1.195662497166971,
+  "late_to_early_motion_ratio": 1.0603633368636691,
+  "motion_retained": true,
+  "deterioration_signal": false,
+  "source": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/videos/image2-repeat30x3-seed43-90s.mp4",
+  "source_sha256": "c731c30b33c1a42397dbf3f262f39527d5aa7633431eb5d6d4bc1f1eeea4d4a7",
+  "raw_json": "docs/benchmarks/artifacts/2026-09-25-image2-repeat90-motion.json",
+  "label": "repeat90"
+}

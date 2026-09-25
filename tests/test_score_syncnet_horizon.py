@@ -26,6 +26,17 @@ class ScoreSyncNetHorizonTests(unittest.TestCase):
             score_segments(np.ones((55, 3)), fps=25,
                            segment_seconds=2, segment_count=2, vshift=1)
 
+    def test_margin_excludes_repetition_edges(self):
+        first = np.tile([3.0, 1.0, 4.0], (50, 1))
+        second = np.tile([3.0, 1.0, 4.0], (50, 1))
+        first[:5, 0] = 100.0
+        second[-5:, 0] = 100.0
+        rows = score_segments(np.concatenate([first, second]), fps=25,
+                              segment_seconds=2, segment_count=2, vshift=1,
+                              margin_frames=5)
+        self.assertEqual([row["windows"] for row in rows], [40, 40])
+        self.assertAlmostEqual(rows[0]["min_distance"], rows[1]["min_distance"])
+
 
 if __name__ == "__main__":
     unittest.main()

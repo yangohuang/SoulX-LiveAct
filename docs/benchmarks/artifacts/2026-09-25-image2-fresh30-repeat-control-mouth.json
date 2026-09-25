@@ -1,0 +1,32 @@
+{
+  "source": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-30s.mp4",
+  "source_sha256": "74764fdb5613059a790e7bfccf8a6aa2ffdd1dea53187c41c160d2daf24107dd",
+  "crop": "/tmp/liveact-repeat-syncnet/pycrop/image2_seed43_fresh30/00000.avi",
+  "crop_sha256": "3981b99f52477dead358769acfc03a3ed498be8458c8bf1e120c71208ea30594",
+  "crop_frames": 755,
+  "crop_fps": 25,
+  "mouth_box_xyxy": [
+    60,
+    90,
+    160,
+    150
+  ],
+  "upper_box_xyxy": [
+    60,
+    30,
+    160,
+    90
+  ],
+  "limitation": "fixed crop ROIs include expression, jaw/head motion and tracker error; not a phoneme-aligned lip score",
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "transitions": 749,
+      "mouth_mean": 6.225390743213174,
+      "mouth_median": 5.669,
+      "upper_mean": 6.136686248331109,
+      "mouth_minus_upper_mean": 0.08870449488206494
+    }
+  ]
+}

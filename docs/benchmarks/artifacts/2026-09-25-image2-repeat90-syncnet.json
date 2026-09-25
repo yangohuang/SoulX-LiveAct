@@ -1,0 +1,81 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "docs/benchmarks/artifacts/videos/image2-repeat30x3-seed43-90s.mp4",
+  "source_sha256": "c731c30b33c1a42397dbf3f262f39527d5aa7633431eb5d6d4bc1f1eeea4d4a7",
+  "crop": "/tmp/liveact-repeat-syncnet/pycrop/image2_repeat90_seed43/00000.avi",
+  "crop_sha256": "6b436e7bd71a227c7f8abd80030c5943dc506c60792e21a9725155a60d3250f1",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "docs/benchmarks/artifacts/2026-09-25-image2-repeat90-syncnet-distances.npz",
+  "distance_matrix_sha256": "d35d87e3c804e1cbadae7adc8fd4c26ca390015bdcb82d3acd801262059cc525",
+  "distance_matrix_shape": [
+    2248,
+    31
+  ],
+  "full": {
+    "windows": 2248,
+    "best_offset_25fps_frames": -2,
+    "min_distance": 8.167470932006836,
+    "confidence": 6.855231285095215
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 0.0,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.011587142944336,
+      "confidence": 6.99172306060791
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "edge_margin_seconds": 0.0,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.268280982971191,
+      "confidence": 6.841849327087402
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "edge_margin_seconds": 0.0,
+      "windows": 748,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.222664833068848,
+      "confidence": 6.792365074157715
+    }
+  ],
+  "interior_segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "edge_margin_seconds": 2.0,
+      "windows": 650,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.031378746032715,
+      "confidence": 6.952878952026367
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "edge_margin_seconds": 2.0,
+      "windows": 650,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.307997703552246,
+      "confidence": 6.680393218994141
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "edge_margin_seconds": 2.0,
+      "windows": 648,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.215315818786621,
+      "confidence": 6.69536018371582
+    }
+  ],
+  "source_audio_sha256": "2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0",
+  "crop_video_frames": 2257,
+  "crop_audio_samples_16khz": 1442304
+}

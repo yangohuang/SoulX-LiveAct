@@ -1,0 +1,42 @@
+{
+  "repeat_audio": "/tmp/liveact-image2-repeat30x3-seed43.wav",
+  "repeat_audio_sha256": "2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0",
+  "fresh_audio": "/tmp/liveact-long-horizon-audio2-30s.wav",
+  "fresh_audio_sha256": "85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e",
+  "wav2vec_weights_sha256": "be2da40c9e7ae26bfc904a3ed79ebb9e8f060bec6dba85d6a6ae86114bc38901",
+  "preprocessing": "generate.py resample_audio: SoX tempo=25/24, 16kHz resample, x3 amplitude; get_embedding, BF16 CUDA",
+  "device": "cuda",
+  "dtype": "torch.bfloat16",
+  "embedding_shape_repeat": [
+    2160,
+    12,
+    768
+  ],
+  "embedding_shape_fresh": [
+    720,
+    12,
+    768
+  ],
+  "margin_frames": 48,
+  "repeat_1_vs_0": {
+    "frames": 624,
+    "mean_cosine": 0.9433683753013611,
+    "p10_cosine": 0.8835285305976868,
+    "min_cosine": 0.23778417706489563,
+    "normalized_mae": 0.3030451536178589
+  },
+  "repeat_2_vs_0": {
+    "frames": 624,
+    "mean_cosine": 0.9504224061965942,
+    "p10_cosine": 0.8965291380882263,
+    "min_cosine": 0.2490379959344864,
+    "normalized_mae": 0.27501949667930603
+  },
+  "fresh_vs_repeat_0": {
+    "frames": 624,
+    "mean_cosine": 0.9934277534484863,
+    "p10_cosine": 0.9916742444038391,
+    "min_cosine": 0.6811577677726746,
+    "normalized_mae": 0.11304520070552826
+  }
+}

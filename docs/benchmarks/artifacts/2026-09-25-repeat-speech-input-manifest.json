@@ -1,0 +1,18 @@
+{
+  "identity": 2,
+  "seed": 43,
+  "reference_image": "examples/image/2.png",
+  "reference_sha256": "7f9c1d2567ca391200b1a76b2e07442111d4472493411b59195f80872d078550",
+  "prompt": "一个人在说话",
+  "settings": "416x720, 24 FPS, 3 denoising steps, FP8 GEMM/KV, offload_cache, block_offload, t5_cpu, disable_compile, resident_kv_steps=1, no anchor",
+  "fresh_audio_sha256": "85372c99f11ca8396d9c01bb1aa1314bb165e93000938ba87f8ad06de104637e",
+  "repeat_audio_sha256": "2df37c1e0e5c4ee22c1cd6cc2839fb23b08954f5bc1a58a86e6c70216b2454b0",
+  "source_pcm_samples_per_period": 480000,
+  "repeat_pcm_periods_bit_identical": true,
+  "fresh_control_video": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-30s.mp4",
+  "fresh_control_video_sha256": "74764fdb5613059a790e7bfccf8a6aa2ffdd1dea53187c41c160d2daf24107dd",
+  "repeat_video": "docs/benchmarks/artifacts/videos/image2-repeat30x3-seed43-90s.mp4",
+  "repeat_video_sha256": "c731c30b33c1a42397dbf3f262f39527d5aa7633431eb5d6d4bc1f1eeea4d4a7",
+  "repeat_request_json_sha256": "346940cc332c15a349d6e6a0eb0a48bfff22b2eeb0a35c697a8af73de419a1ad",
+  "fresh_control_input_manifest": "docs/benchmarks/artifacts/2026-09-25-seed43-input-manifest.json"
+}
