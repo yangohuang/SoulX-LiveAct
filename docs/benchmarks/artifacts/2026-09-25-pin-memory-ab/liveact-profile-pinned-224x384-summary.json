@@ -1,0 +1,43 @@
+{
+  "profiled_forwards": 1,
+  "steady_block_dit_wall_s": 1.03,
+  "events": [
+    {
+      "name": "liveact/dit_forward",
+      "count": 1,
+      "cpu_total_ms": 872.91,
+      "device_total_ms": 1993.748
+    },
+    {
+      "name": "liveact/dit_forward",
+      "count": 1,
+      "cpu_total_ms": 0.0,
+      "device_total_ms": 1028.178
+    },
+    {
+      "name": "liveact/fp8_linear",
+      "count": 492,
+      "cpu_total_ms": 132.473,
+      "device_total_ms": 563.967
+    },
+    {
+      "name": "liveact/fp8_linear",
+      "count": 492,
+      "cpu_total_ms": 0.0,
+      "device_total_ms": 357.1
+    },
+    {
+      "name": "liveact/weight_copy",
+      "count": 2280,
+      "cpu_total_ms": 31.522,
+      "device_total_ms": 970.967
+    },
+    {
+      "name": "liveact/weight_copy",
+      "count": 2280,
+      "cpu_total_ms": 0.0,
+      "device_total_ms": 970.967
+    }
+  ],
+  "trace": "/tmp/liveact-profile-pinned-224x384/steady_block_trace.json"
+}
