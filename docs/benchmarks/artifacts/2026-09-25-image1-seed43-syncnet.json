@@ -1,0 +1,28 @@
+{
+  "identity": 1,
+  "seed": 43,
+  "pipeline": "joonson/syncnet_python run_pipeline.py and run_syncnet.py; S3FD at 25 FPS",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "videos": {
+    "baseline": {
+      "source": "docs/benchmarks/artifacts/videos/image1-baseline-seed43-30s.mp4",
+      "sha256": "29d6c36cebeab5a8173b7f5452c0a15d56e15a1ce09abe27962fc5de4b249969",
+      "crop_sha256": "b47900a76a0901111c65455726bdab47f9764c3f183e748944f05e9bf140ee77",
+      "converted_frames": 754,
+      "audio_samples": 481536,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.062,
+      "confidence": 6.529
+    },
+    "anchor045": {
+      "source": "docs/benchmarks/artifacts/videos/image1-anchor045-seed43-30s.mp4",
+      "sha256": "f2a1a54bc57708de78c291829e53dc9d113ba6f540ebaf40021da4b6c3830ba8",
+      "crop_sha256": "11adbe4cc83e3699d34cc92408bf2ccbf2f174a14ae4c2ab85e32d83cb8633b3",
+      "converted_frames": 754,
+      "audio_samples": 481536,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.26,
+      "confidence": 6.296
+    }
+  }
+}
