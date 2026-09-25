@@ -1,0 +1,42 @@
+{
+  "identity": 2,
+  "seed": 43,
+  "pipeline": "joonson/syncnet_python local run_pipeline.py and run_syncnet.py; 25fps S3FD face crop",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "matched_endpoint": "All three arms compared at 754 converted face-crop frames and 481536 audio samples. Baseline and velocity source mux durations 30.125 s yielded 755 cropped frames, so only their extra final converted face-crop frame was removed by FFmpeg stream-copy -t 30.16; hold crop was unchanged. Original 722-frame MP4s were not modified.",
+  "videos": {
+    "baseline": {
+      "source": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-30s.mp4",
+      "sha256": "74764fdb5613059a790e7bfccf8a6aa2ffdd1dea53187c41c160d2daf24107dd",
+      "raw_crop_sha256": "d6f2a2ad94a6088547d9cb2f4ebefda9085cc89afc6211f86387cd6bbaa7d8d8",
+      "matched_crop_sha256": "49ed7d8de325e421724a6cb4ccf85ced1f9d9460e0abb379bae35df4b1c1e825",
+      "matched_face_crop_frames": 754,
+      "matched_crop_audio_samples": 481536,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.059,
+      "confidence": 6.955
+    },
+    "hold045": {
+      "source": "docs/benchmarks/artifacts/videos/image2-anchor045-seed43-30s.mp4",
+      "sha256": "03bc8d675187f305bccc1e102ea603cb597fe878a455d7460fb0a1ba3aeed62f",
+      "raw_crop_sha256": "0bcee40774fd034d6005884bba659fcbd03e5bdc77185e541ab00c24ce7d5302",
+      "matched_crop_sha256": "0bcee40774fd034d6005884bba659fcbd03e5bdc77185e541ab00c24ce7d5302",
+      "matched_face_crop_frames": 754,
+      "matched_crop_audio_samples": 481536,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.194,
+      "confidence": 6.668
+    },
+    "velocity045": {
+      "source": "docs/benchmarks/artifacts/videos/image2-velocity045-seed43-30s.mp4",
+      "sha256": "f4680d6d493e8a3e4cd82ca3c326152ba151c77add64c66cd7bbb3dc5fe69310",
+      "raw_crop_sha256": "e59f52ece6204b8d962039a3e1cb394d5267a7e2518afd3d3f48e1f082596006",
+      "matched_crop_sha256": "36dccee682160a9ab0d4d458336bd5820c38964a7591944040c235b2ff67db42",
+      "matched_face_crop_frames": 754,
+      "matched_crop_audio_samples": 481536,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.508,
+      "confidence": 6.224
+    }
+  }
+}

@@ -20,6 +20,26 @@ class TemporalContinuityTests(unittest.TestCase):
         previous = torch.randn(2, 2, 2, 2)
 
         self.assertIs(anchor_chunk_start(clean, previous, 0.0), clean)
+        self.assertIs(anchor_chunk_start(clean, previous, 0.0, mode="velocity"), clean)
+
+    def test_velocity_target_preserves_linear_trajectory(self):
+        clean = torch.tensor([[[[8.0]], [[10.0]], [[20.0]]]])
+        previous = torch.tensor([[[[3.0]], [[5.0]]]])
+
+        actual = anchor_chunk_start(clean, previous, 0.6, mode="velocity")
+
+        torch.testing.assert_close(actual, torch.tensor([[[[7.4]], [[9.8]], [[20.0]]]]))
+        torch.testing.assert_close(clean, torch.tensor([[[[8.0]], [[10.0]], [[20.0]]]]))
+
+    def test_explicit_hold_mode_matches_existing_default(self):
+        clean = torch.randn(2, 3, 9, 9)
+        previous = torch.randn(2, 2, 9, 9)
+        for kernel in (0, 5):
+            with self.subTest(kernel=kernel):
+                default = anchor_chunk_start(clean, previous, 0.45, lowpass_kernel=kernel)
+                explicit = anchor_chunk_start(clean, previous, 0.45,
+                                              lowpass_kernel=kernel, mode="hold")
+                self.assertTrue(torch.equal(default, explicit))
 
     def test_lowpass_anchor_changes_coarse_pose_without_copying_impulse(self):
         clean = torch.zeros(1, 3, 9, 9)
@@ -44,6 +64,10 @@ class TemporalContinuityTests(unittest.TestCase):
             anchor_chunk_start(clean, previous, 0.5, lowpass_kernel=2)
         with self.assertRaisesRegex(ValueError, "matching"):
             anchor_chunk_start(clean, torch.randn(3, 2, 2, 2), 0.5)
+        with self.assertRaisesRegex(ValueError, "mode"):
+            anchor_chunk_start(clean, previous, 0.5, mode="unknown")
+        with self.assertRaisesRegex(ValueError, "two previous"):
+            anchor_chunk_start(clean, previous[:, -1:], 0.5, mode="velocity")
 
 
 if __name__ == "__main__":

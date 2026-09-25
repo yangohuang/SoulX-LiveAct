@@ -166,6 +166,11 @@ def _parse_args():
         default=0.0,
         help="Experiment: blend the next chunk's first two clean latents toward the prior chunk (0 disables it).")
     parser.add_argument(
+        "--motion_anchor_mode",
+        choices=("hold", "velocity"),
+        default="hold",
+        help="Experiment: hold the last prior latent or extrapolate its final velocity (default: hold).")
+    parser.add_argument(
         "--motion_anchor_lowpass_kernel",
         type=int,
         choices=(0, 3, 5, 9),
@@ -533,7 +538,8 @@ def generate(args):
                         torch.save(snapshot, probe_dir / f"block-{_}-step-{i}.pt")
                     if f > 0 and args.motion_anchor_strength > 0:
                         x0_pred = anchor_chunk_start(x0_pred, pre_latent, args.motion_anchor_strength,
-                                                     lowpass_kernel=args.motion_anchor_lowpass_kernel)
+                                                     lowpass_kernel=args.motion_anchor_lowpass_kernel,
+                                                     mode=args.motion_anchor_mode)
                     latent = (1-timesteps[i+1][0]/1000)*x0_pred + torch.randn_like(x0_pred)*(timesteps[i+1][0]/1000)
 
                 if rollout_dir is not None:
