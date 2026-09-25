@@ -1,0 +1,45 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "docs/benchmarks/artifacts/videos/image3-baseline-seed43-60s.mp4",
+  "source_sha256": "0be0735cd28017e2612143c9fa8eada2253d514efbd02f547bd05bca5a1ce328",
+  "crop": "/tmp/liveact-horizon-syncnet/pycrop/image3_seed43_60s/00000.avi",
+  "crop_sha256": "1b68c87c64656afca939e5e384251f8e9b143b1b9eaf59c707687f17cfe8e916",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "docs/benchmarks/artifacts/2026-09-25-image3-seed43-60s-syncnet-distances.npz",
+  "distance_matrix_sha256": "823d41be269fc48e5dca92f02a393f1154e7faea1e1fa96e34fa1b5e2135a118",
+  "distance_matrix_shape": [
+    1498,
+    31
+  ],
+  "full": {
+    "windows": 1498,
+    "best_offset_25fps_frames": -1,
+    "min_distance": 8.275582313537598,
+    "confidence": 5.6801605224609375
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "windows": 750,
+      "best_offset_25fps_frames": -1,
+      "min_distance": 7.960702419281006,
+      "confidence": 5.779358386993408,
+      "source_audio_rms": 0.06922399252653122,
+      "source_audio_20ms_active_fraction_rms_gt_0p01": 0.956
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "windows": 748,
+      "best_offset_25fps_frames": -1,
+      "min_distance": 8.591320991516113,
+      "confidence": 5.619032859802246,
+      "source_audio_rms": 0.13450545072555542,
+      "source_audio_20ms_active_fraction_rms_gt_0p01": 1.0
+    }
+  ],
+  "source_audio_sha256": "5cb90a0dc57d4bdd5dc3ad6131049ad6bcb679915fb3580d1d233323442cdf0a",
+  "crop_video_frames": 1505,
+  "crop_audio_samples_16khz": 961920
+}

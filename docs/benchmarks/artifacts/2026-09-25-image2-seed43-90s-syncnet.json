@@ -1,0 +1,55 @@
+{
+  "pipeline": "joonson/syncnet_python, S3FD face crop at 25 FPS; 31-shift distances",
+  "source": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-90s.mp4",
+  "source_sha256": "5464eb4f3b6d8066fac9dbc709062b4dcc158d90bcc2558983b9597906667bd8",
+  "crop": "/tmp/liveact-horizon-syncnet/pycrop/image2_seed43_90s/00000.avi",
+  "crop_sha256": "620eeedbf467e7e317bc2311568cf9e02542f101d36d4c60a127755e4f7733ca",
+  "model_sha256": "961e8696f888fce4f3f3a6c3d5b3267cf5b343100b238e79b2659bff2c605442",
+  "distance_matrix": "docs/benchmarks/artifacts/2026-09-25-image2-seed43-90s-syncnet-distances.npz",
+  "distance_matrix_sha256": "d29de863f8a447335f0ba9482f591cb7cc25f1e3457b0b0eab8ac4cd3f612075",
+  "distance_matrix_shape": [
+    2248,
+    31
+  ],
+  "full": {
+    "windows": 2248,
+    "best_offset_25fps_frames": -2,
+    "min_distance": 8.41700553894043,
+    "confidence": 6.637850761413574
+  },
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 7.86750602722168,
+      "confidence": 7.122071266174316,
+      "source_audio_rms": 0.06966226547956467,
+      "source_audio_20ms_active_fraction_rms_gt_0p01": 0.8753333333333333
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "windows": 750,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.628329277038574,
+      "confidence": 6.50314998626709,
+      "source_audio_rms": 0.07395315170288086,
+      "source_audio_20ms_active_fraction_rms_gt_0p01": 0.8553333333333333
+    },
+    {
+      "start_second": 60,
+      "end_second": 90,
+      "windows": 748,
+      "best_offset_25fps_frames": -2,
+      "min_distance": 8.756086349487305,
+      "confidence": 6.412762641906738,
+      "source_audio_rms": 0.07390438765287399,
+      "source_audio_20ms_active_fraction_rms_gt_0p01": 0.8646666666666667
+    }
+  ],
+  "source_audio_sha256": "3c55ef5fd1c096a2abc80c978cc5fa627344d4e8fa17c1b8a2c0fcd9c92a5e00",
+  "crop_video_frames": 2257,
+  "crop_audio_samples_16khz": 1442304
+}

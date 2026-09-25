@@ -1,0 +1,32 @@
+{
+  "prompt": "一个人在说话",
+  "output": "416x720, 24 FPS, 3 denoising steps, FP8 GEMM/KV, offload_cache, block_offload, t5_cpu, disable_compile, resident_kv_steps=1, no motion anchor",
+  "hardware": "single RTX 4090",
+  "sampling": "independent causal rollouts, seed 43; unequal 90s/60s horizons",
+  "rows": {
+    "image2_seed43_90s": {
+      "reference_image": "examples/image/2.png",
+      "reference_sha256": "7f9c1d2567ca391200b1a76b2e07442111d4472493411b59195f80872d078550",
+      "source_audio": "examples/audio/2.wav",
+      "source_audio_sha256": "bd6140c4576acbe23dd809f7444f85a752be42a709a59969812209e5ffc049b8",
+      "trim_command": "ffmpeg -nostdin -v error -y -i examples/audio/2.wav -t 90 -acodec pcm_s16le -ar 16000 <trimmed_audio>",
+      "trimmed_audio_sha256": "3c55ef5fd1c096a2abc80c978cc5fa627344d4e8fa17c1b8a2c0fcd9c92a5e00",
+      "request_json_sha256": "daf5d67f5fb36692b5a8d3a4ac41968467e0195c0b0a61a9da03734d44293094",
+      "generated_video": "docs/benchmarks/artifacts/videos/image2-baseline-seed43-90s.mp4",
+      "generated_video_sha256": "5464eb4f3b6d8066fac9dbc709062b4dcc158d90bcc2558983b9597906667bd8",
+      "audio_duration_seconds": 90
+    },
+    "image3_seed43_60s": {
+      "reference_image": "examples/image/3.png",
+      "reference_sha256": "a995cd1668b0041829a25cec0ffa5da25e81089d9e6e0c1e5d97c5c056228519",
+      "source_audio": "examples/audio/3.wav",
+      "source_audio_sha256": "bf0d7f881414491601c50f42eb1e457f044a3a0a5b76adf41c833934ed66f0f8",
+      "trim_command": "ffmpeg -nostdin -v error -y -i examples/audio/3.wav -t 60 -acodec pcm_s16le -ar 16000 <trimmed_audio>",
+      "trimmed_audio_sha256": "5cb90a0dc57d4bdd5dc3ad6131049ad6bcb679915fb3580d1d233323442cdf0a",
+      "request_json_sha256": "bd58b079be1592ec910208d8d3b4328b85fe6936ff1d63d0d21a2bab563fd238",
+      "generated_video": "docs/benchmarks/artifacts/videos/image3-baseline-seed43-60s.mp4",
+      "generated_video_sha256": "0be0735cd28017e2612143c9fa8eada2253d514efbd02f547bd05bca5a1ce328",
+      "audio_duration_seconds": 60
+    }
+  }
+}

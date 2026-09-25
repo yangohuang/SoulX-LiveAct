@@ -1,0 +1,197 @@
+{
+  "blocks": 46,
+  "block_cost_ms_median": 19093.085,
+  "block_cost_ms_mean": 19172.950217391302,
+  "block_cost_ms_min": 19033.22,
+  "block_cost_ms_max": 20117.47,
+  "sum_block_cost_s": 881.95571,
+  "generated_video_seconds": 60.083333333333336,
+  "throughput_fps_from_block_cost_only": 1.6350027372689724,
+  "sampled_peak_gpu_mib": 16316,
+  "per_block": [
+    {
+      "index": 0,
+      "video_cost_ms": 19670.77
+    },
+    {
+      "index": 1,
+      "video_cost_ms": 19125.01
+    },
+    {
+      "index": 2,
+      "video_cost_ms": 19108.29
+    },
+    {
+      "index": 3,
+      "video_cost_ms": 19080.91
+    },
+    {
+      "index": 4,
+      "video_cost_ms": 19074.93
+    },
+    {
+      "index": 5,
+      "video_cost_ms": 19340.12
+    },
+    {
+      "index": 6,
+      "video_cost_ms": 19754.16
+    },
+    {
+      "index": 7,
+      "video_cost_ms": 19743.92
+    },
+    {
+      "index": 8,
+      "video_cost_ms": 19724.51
+    },
+    {
+      "index": 9,
+      "video_cost_ms": 19055.02
+    },
+    {
+      "index": 10,
+      "video_cost_ms": 20117.47
+    },
+    {
+      "index": 11,
+      "video_cost_ms": 19198.85
+    },
+    {
+      "index": 12,
+      "video_cost_ms": 19071.76
+    },
+    {
+      "index": 13,
+      "video_cost_ms": 19109.73
+    },
+    {
+      "index": 14,
+      "video_cost_ms": 19066.42
+    },
+    {
+      "index": 15,
+      "video_cost_ms": 19068.93
+    },
+    {
+      "index": 16,
+      "video_cost_ms": 19089.05
+    },
+    {
+      "index": 17,
+      "video_cost_ms": 19052.77
+    },
+    {
+      "index": 18,
+      "video_cost_ms": 19033.22
+    },
+    {
+      "index": 19,
+      "video_cost_ms": 19050.49
+    },
+    {
+      "index": 20,
+      "video_cost_ms": 19064.75
+    },
+    {
+      "index": 21,
+      "video_cost_ms": 19040.86
+    },
+    {
+      "index": 22,
+      "video_cost_ms": 19094.3
+    },
+    {
+      "index": 23,
+      "video_cost_ms": 19093.35
+    },
+    {
+      "index": 24,
+      "video_cost_ms": 19110.81
+    },
+    {
+      "index": 25,
+      "video_cost_ms": 19090.72
+    },
+    {
+      "index": 26,
+      "video_cost_ms": 19092.82
+    },
+    {
+      "index": 27,
+      "video_cost_ms": 19067.56
+    },
+    {
+      "index": 28,
+      "video_cost_ms": 19079.67
+    },
+    {
+      "index": 29,
+      "video_cost_ms": 19091.22
+    },
+    {
+      "index": 30,
+      "video_cost_ms": 19100.6
+    },
+    {
+      "index": 31,
+      "video_cost_ms": 19088.8
+    },
+    {
+      "index": 32,
+      "video_cost_ms": 19086.16
+    },
+    {
+      "index": 33,
+      "video_cost_ms": 19082.17
+    },
+    {
+      "index": 34,
+      "video_cost_ms": 19098.68
+    },
+    {
+      "index": 35,
+      "video_cost_ms": 19096.73
+    },
+    {
+      "index": 36,
+      "video_cost_ms": 19075.87
+    },
+    {
+      "index": 37,
+      "video_cost_ms": 19086.52
+    },
+    {
+      "index": 38,
+      "video_cost_ms": 19099.97
+    },
+    {
+      "index": 39,
+      "video_cost_ms": 19103.73
+    },
+    {
+      "index": 40,
+      "video_cost_ms": 19099.26
+    },
+    {
+      "index": 41,
+      "video_cost_ms": 19125.12
+    },
+    {
+      "index": 42,
+      "video_cost_ms": 19110.99
+    },
+    {
+      "index": 43,
+      "video_cost_ms": 19090.3
+    },
+    {
+      "index": 44,
+      "video_cost_ms": 19121.1
+    },
+    {
+      "index": 45,
+      "video_cost_ms": 19127.32
+    }
+  ]
+}

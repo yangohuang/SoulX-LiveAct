@@ -1,0 +1,51 @@
+LIVEACT_STARTUP t5_s=0.094
+LIVEACT_STARTUP dit_load_s=0.336
+LIVEACT_STARTUP ready_s=38.778
+----iter_total_num= 46
+Done Block 0: duration 1000.0ms video cost 19670.77 ms
+Done Block 1: duration 1333.3333333333333ms video cost 19125.01 ms
+Done Block 2: duration 1333.3333333333333ms video cost 19108.29 ms
+Done Block 3: duration 1333.3333333333333ms video cost 19080.91 ms
+Done Block 4: duration 1333.3333333333333ms video cost 19074.93 ms
+Done Block 5: duration 1333.3333333333333ms video cost 19340.12 ms
+Done Block 6: duration 1333.3333333333333ms video cost 19754.16 ms
+Done Block 7: duration 1333.3333333333333ms video cost 19743.92 ms
+Done Block 8: duration 1333.3333333333333ms video cost 19724.51 ms
+Done Block 9: duration 1333.3333333333333ms video cost 19055.02 ms
+Done Block 10: duration 1333.3333333333333ms video cost 20117.47 ms
+Done Block 11: duration 1333.3333333333333ms video cost 19198.85 ms
+Done Block 12: duration 1333.3333333333333ms video cost 19071.76 ms
+Done Block 13: duration 1333.3333333333333ms video cost 19109.73 ms
+Done Block 14: duration 1333.3333333333333ms video cost 19066.42 ms
+Done Block 15: duration 1333.3333333333333ms video cost 19068.93 ms
+Done Block 16: duration 1333.3333333333333ms video cost 19089.05 ms
+Done Block 17: duration 1333.3333333333333ms video cost 19052.77 ms
+Done Block 18: duration 1333.3333333333333ms video cost 19033.22 ms
+Done Block 19: duration 1333.3333333333333ms video cost 19050.49 ms
+Done Block 20: duration 1333.3333333333333ms video cost 19064.75 ms
+Done Block 21: duration 1333.3333333333333ms video cost 19040.86 ms
+Done Block 22: duration 1333.3333333333333ms video cost 19094.30 ms
+Done Block 23: duration 1333.3333333333333ms video cost 19093.35 ms
+Done Block 24: duration 1333.3333333333333ms video cost 19110.81 ms
+Done Block 25: duration 1333.3333333333333ms video cost 19090.72 ms
+Done Block 26: duration 1333.3333333333333ms video cost 19092.82 ms
+Done Block 27: duration 1333.3333333333333ms video cost 19067.56 ms
+Done Block 28: duration 1333.3333333333333ms video cost 19079.67 ms
+Done Block 29: duration 1333.3333333333333ms video cost 19091.22 ms
+Done Block 30: duration 1333.3333333333333ms video cost 19100.60 ms
+Done Block 31: duration 1333.3333333333333ms video cost 19088.80 ms
+Done Block 32: duration 1333.3333333333333ms video cost 19086.16 ms
+Done Block 33: duration 1333.3333333333333ms video cost 19082.17 ms
+Done Block 34: duration 1333.3333333333333ms video cost 19098.68 ms
+Done Block 35: duration 1333.3333333333333ms video cost 19096.73 ms
+Done Block 36: duration 1333.3333333333333ms video cost 19075.87 ms
+Done Block 37: duration 1333.3333333333333ms video cost 19086.52 ms
+Done Block 38: duration 1333.3333333333333ms video cost 19099.97 ms
+Done Block 39: duration 1333.3333333333333ms video cost 19103.73 ms
+Done Block 40: duration 1333.3333333333333ms video cost 19099.26 ms
+Done Block 41: duration 1333.3333333333333ms video cost 19125.12 ms
+Done Block 42: duration 1333.3333333333333ms video cost 19110.99 ms
+Done Block 43: duration 1333.3333333333333ms video cost 19090.30 ms
+Done Block 44: duration 1333.3333333333333ms video cost 19121.10 ms
+Done Block 45: duration 1333.3333333333333ms video cost 19127.32 ms
+Video with audio generated successfully: /tmp/liveact-image3-baseline-seed43-60s.mp4

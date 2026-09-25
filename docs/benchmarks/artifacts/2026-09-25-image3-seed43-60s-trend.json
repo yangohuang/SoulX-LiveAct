@@ -1,0 +1,35 @@
+{
+  "fps": 24,
+  "segment_seconds": 30,
+  "severe_threshold_early_p95": 7.466391559829059,
+  "segments": [
+    {
+      "start_second": 0,
+      "end_second": 30,
+      "count": 22,
+      "median_peak": 6.017067307692308,
+      "mean_peak": 5.759639665889666,
+      "mean_immediate": 5.343060411810412,
+      "mean_motion_sum": 33.212752525252526,
+      "severe_count": 2
+    },
+    {
+      "start_second": 30,
+      "end_second": 60,
+      "count": 23,
+      "median_peak": 6.1119123931623935,
+      "mean_peak": 5.985065960609439,
+      "mean_immediate": 5.296948160535117,
+      "mean_motion_sum": 35.791346153846156,
+      "severe_count": 1
+    }
+  ],
+  "late_to_early_median_peak_ratio": 1.015762676503358,
+  "late_to_early_motion_ratio": 1.0776386608316506,
+  "motion_retained": true,
+  "deterioration_signal": false,
+  "source": "/home/yg/yg/code/github/SoulX/SoulX-LiveAct-long-horizon-study/docs/benchmarks/artifacts/videos/image3-baseline-seed43-60s.mp4",
+  "source_sha256": "0be0735cd28017e2612143c9fa8eada2253d514efbd02f547bd05bca5a1ce328",
+  "raw_json": "docs/benchmarks/artifacts/2026-09-25-image3-seed43-60s-motion.json",
+  "label": "baseline"
+}

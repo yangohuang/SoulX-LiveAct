@@ -1,0 +1,173 @@
+{
+  "contract": "30-second archived unanchored baselines split into 0\u201315s and 15\u201330s; diagnostic calibration before 90s video result; no time-causality claim",
+  "rows": {
+    "image1_seed42": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-long-horizon-stability.json",
+      "source_video_sha256": "3a897abdf5c771ebfc8bf6278cdc485d3293e7d63b34a093dd5356863e142157",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 2.9268696581196583,
+        "mean_peak": 3.744949494949495,
+        "mean_immediate": 2.6913898601398603,
+        "mean_motion_sum": 17.627549533799534,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 3.7083333333333335,
+        "mean_peak": 4.515374902874902,
+        "mean_immediate": 2.6845328282828285,
+        "mean_motion_sum": 18.259396853146853,
+        "severe_count": 1
+      },
+      "late_to_early_median_peak_ratio": 1.2669964045189903,
+      "late_to_early_motion_ratio": 1.035844308259398,
+      "old_rule": true,
+      "median_only_rule": true
+    },
+    "image1_seed43": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-image1-seed43-motion-pair.json",
+      "source_video_sha256": "29d6c36cebeab5a8173b7f5452c0a15d56e15a1ce09abe27962fc5de4b249969",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 3.6867521367521365,
+        "mean_peak": 3.8945998445998447,
+        "mean_immediate": 3.3180701243201245,
+        "mean_motion_sum": 21.38464937839938,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 2.861645299145299,
+        "mean_peak": 2.833721833721834,
+        "mean_immediate": 2.310266122766123,
+        "mean_motion_sum": 15.921819153069153,
+        "severe_count": 0
+      },
+      "late_to_early_median_peak_ratio": 0.776196823924887,
+      "late_to_early_motion_ratio": 0.7445443164081882,
+      "old_rule": false,
+      "median_only_rule": false
+    },
+    "image2_seed42": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-image2-motion-pair.json",
+      "source_video_sha256": "a3af88e515e99d7a753349e28459e15add51d45a41b84e3133b390da2a837ef4",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 4.746260683760684,
+        "mean_peak": 4.818720862470863,
+        "mean_immediate": 3.546780303030303,
+        "mean_motion_sum": 26.634226884226884,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 4.806837606837607,
+        "mean_peak": 5.600694444444445,
+        "mean_immediate": 4.537300893550894,
+        "mean_motion_sum": 31.604705710955713,
+        "severe_count": 3
+      },
+      "late_to_early_median_peak_ratio": 1.012763083849184,
+      "late_to_early_motion_ratio": 1.1866199776826414,
+      "old_rule": true,
+      "median_only_rule": false
+    },
+    "image2_seed43": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-image2-seed43-motion-pair.json",
+      "source_video_sha256": "74764fdb5613059a790e7bfccf8a6aa2ffdd1dea53187c41c160d2daf24107dd",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 6.583600427350428,
+        "mean_peak": 6.082264957264957,
+        "mean_immediate": 4.23589257964258,
+        "mean_motion_sum": 31.77066822066822,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 4.896367521367521,
+        "mean_peak": 5.9140248640248645,
+        "mean_immediate": 3.992987567987568,
+        "mean_motion_sum": 31.047256216006215,
+        "severe_count": 2
+      },
+      "late_to_early_median_peak_ratio": 0.7437218548419814,
+      "late_to_early_motion_ratio": 0.9772301923384982,
+      "old_rule": true,
+      "median_only_rule": false
+    },
+    "image3_seed42": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-image3-motion-pair.json",
+      "source_video_sha256": "da4b93e3e7837c9650dbcabaea21b305af162b48359e3821a6f1fe3787829a67",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 5.340705128205128,
+        "mean_peak": 5.3775786713286715,
+        "mean_immediate": 4.966865773115773,
+        "mean_motion_sum": 33.096916278166276,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 6.413995726495727,
+        "mean_peak": 6.029642579642579,
+        "mean_immediate": 5.209615384615384,
+        "mean_motion_sum": 36.8392871017871,
+        "severe_count": 8
+      },
+      "late_to_early_median_peak_ratio": 1.200964212126668,
+      "late_to_early_motion_ratio": 1.1130730969667295,
+      "old_rule": true,
+      "median_only_rule": false
+    },
+    "image3_seed43": {
+      "source_motion_json": "docs/benchmarks/artifacts/2026-09-25-image3-seed43-motion-pair.json",
+      "source_video_sha256": "7f9241598b4f05a4d8ad8aa482cdafa2df917c7878bba82b4ff0c81589b2aa37",
+      "early": {
+        "start_second": 0,
+        "end_second": 15,
+        "count": 11,
+        "median_peak": 6.056356837606837,
+        "mean_peak": 5.707381507381507,
+        "mean_immediate": 5.289282245532245,
+        "mean_motion_sum": 32.67880244755244,
+        "severe_count": 1
+      },
+      "late": {
+        "start_second": 15,
+        "end_second": 30,
+        "count": 11,
+        "median_peak": 5.44732905982906,
+        "mean_peak": 5.689952408702409,
+        "mean_immediate": 5.292293123543123,
+        "mean_motion_sum": 34.03479992229992,
+        "severe_count": 1
+      },
+      "late_to_early_median_peak_ratio": 0.8994399117971335,
+      "late_to_early_motion_ratio": 1.0414947113476318,
+      "old_rule": false,
+      "median_only_rule": false
+    }
+  }
+}
